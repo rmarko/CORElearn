@@ -1,0 +1,26 @@
+useDynLib(CORElearn, .registration = TRUE)
+
+export(attrEval, allTests, infoCore, classDataGen, CoreModel, destroyModels, getCoreModel,
+		getRFsizes, modelEval, loadRF, ordDataGen, ordEval, paramCoreIO, plotOrdEval, printOrdEval,
+		regDataGen, rfAttrEval, rfOOB, saveRF, testCoreClass, testCoreAttrEval, testCoreReg,
+		testCoreOrdEval, testCoreNA, testCoreRPORT, testCoreRand, testClassPseudoRandom,
+		testTime, versionCore, calibrate, applyCalibration, reliabilityPlot, preparePlot, rfProximity, rfAttrEvalClustering,
+		rfClustering, rfOutliers, classPrototypes, getRpartModel, display, discretize, applyDiscretization,
+		intervalMidPoint, noEqualRows
+)
+
+import(rpart)
+importFrom("cluster","pam","daisy")
+importFrom("grDevices", "bitmap", "bmp", "dev.cur", "dev.new", "gray",
+     "jpeg", "pdf", "png", "postscript", "tiff")
+importFrom("graphics", "arrows", "axis", "legend", "lines", "mtext",
+           "par", "plot", "points", "polygon", "rect", "segments","text", "title")
+importFrom("utils", "read.table")
+importFrom("stats", "cmdscale","as.formula", "median", "model.frame", "na.pass","predict", 
+           "qnorm", "reformulate", "rnorm", "runif", "sd","update.formula")    
+
+S3method(plot, ordEval)
+S3method(predict, CoreModel)
+S3method(plot, CoreModel)
+S3method(display, CoreModel)
+

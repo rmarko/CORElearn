@@ -1,0 +1,4 @@
+PKG_CPPFLAGS = @flags@
+PKG_LIBS = @flags@
+
+
