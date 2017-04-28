@@ -146,11 +146,11 @@ getRpartModel <- function(model, dataset) {
 getRpart <- function(model) {
     #regression tree
     if(model$model == "regTree"){
-        .Call("exportModelRT", as.integer(model$modelID), PACKAGE="CORElearn")
+        .Call(C_exportModelRT, as.integer(model$modelID))
     }
     #classification tree
     else if(model$model == "tree"){
-        .Call("exportModelT", as.integer(model$modelID), PACKAGE="CORElearn")
+        .Call(C_exportModelT, as.integer(model$modelID))
     }
     else{
         stop("The model must be a regresion or a decision tree.");
@@ -158,8 +158,7 @@ getRpart <- function(model) {
 }
 rfProximity <- function(model, outProximity=TRUE){
     if (model$model == "rf"){
-        .Call("exportProximity", as.integer(model$modelID),
-              as.integer(outProximity==FALSE), PACKAGE="CORElearn")
+        .Call(C_exportProximity, as.integer(model$modelID),as.integer(outProximity==FALSE))
     }
     else{
         stop("The model must be a random forest.");
@@ -168,12 +167,11 @@ rfProximity <- function(model, outProximity=TRUE){
 
 getVarImportanceCluster <-function(model, cluster){
     modelID <- model$modelID;
-    tmp <- .C("exportVarImportanceCluster",
-            as.integer(modelID),
-            clusterData = as.integer(cluster),
-            var = double(model$noNumeric + model$noDiscrete-1),
-            NAOK=TRUE,
-            PACKAGE="CORElearn")
+    tmp <- .C(C_exportVarImportanceCluster,
+        	   	 as.integer(modelID),
+           		 clusterData = as.integer(cluster),
+     		     var = double(model$noNumeric + model$noDiscrete-1),
+                 NAOK=TRUE)
 }
 spaceScale <- function(pr, component){
     space<-cmdscale(pr, component, add=TRUE);

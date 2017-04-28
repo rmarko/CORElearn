@@ -19,7 +19,8 @@ If the number is greater than 10, the case can be considered an outlier accordin
 \examples{
 #first create a random forest tree using CORElearn
 dataset <- iris
-md <- CoreModel(Species ~ ., dataset, model="rf", rfNoTrees=30, maxThreads=1)
+md <- CoreModel(Species ~ ., dataset, model="rf", rfNoTrees=30, 
+                maxThreads=1)
 outliers <- rfOutliers(md, dataset)
 plot(abs(outliers))
 #for a nicer display try 

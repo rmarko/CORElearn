@@ -1,8 +1,7 @@
 #if !defined(REGTREE_H)
 #define REGTREE_H
 
-#include <stdio.h>
-#include <float.h>
+#include <cfloat>
 
 #include "dataStore.h"
 #include "contain.h"

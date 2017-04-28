@@ -1,7 +1,7 @@
 #if !defined(BINNODEREG_H)
 #define BINNODEREG_H
 
-#include <float.h>
+#include <cfloat>
 
 #include "exprReg.h"
 #include "constrctReg.h"

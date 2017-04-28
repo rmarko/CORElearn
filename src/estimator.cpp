@@ -1,5 +1,6 @@
-#include <stdlib.h>
-#include <float.h>
+#include <cstdlib>
+#include <cfloat>
+
 #if defined(_OPENMP)
 #include <omp.h>
 #endif
@@ -11,6 +12,8 @@
 #include "utils.h"
 #include "binpart.h"
 #include "options.h"
+
+using namespace std ;
 
 
 // ***************************************************************************
@@ -736,7 +739,7 @@ double estimation::infGainImpurity(int weightNode, mmatrix<int> &noClassAttrVal,
 	      if (noClassAttrVal(classIdx, valIdx) > 0)
 	      {
 	         tempP = ((double)noClassAttrVal(classIdx, valIdx)) / weightNode ;
-	         Hc -= tempP * log2(tempP) ;
+	         Hc -= tempP * mlog2(tempP) ;
 	      }
    }
    return Hc ;
@@ -745,7 +748,7 @@ double estimation::infOnDistribution(marray<double> &dist) {
    double Hc = 0.0 ;
    for (int classIdx=1 ; classIdx <= noClasses ;classIdx++)	   {
 	      if (dist[classIdx]>0.0)
-	         Hc -= dist[classIdx] * log2(dist[classIdx]) ;
+	         Hc -= dist[classIdx] * mlog2(dist[classIdx]) ;
    }
    return Hc ;
 }
@@ -764,7 +767,7 @@ double estimation::gainRatio(double priorImpurity, int weightNode, marray<int> &
 	double tempP, Ha=0.0, Hc_a=0.0 ;
     for (int valIdx = 1 ; valIdx < attrVal.filled() ; valIdx++) {
 	   tempP = ((double)attrVal[valIdx])/ weightNode ;
-	   Ha -=  tempP * log2(tempP);
+	   Ha -=  tempP * mlog2(tempP);
 	   if (attrVal[valIdx] >0)
           Hc_a += tempP * (this->*fImpurity)(attrVal[valIdx], noClassAttrVal, valIdx) ;
     }
@@ -1177,7 +1180,7 @@ double estimation::infGainCostImpurity(int weightNode, mmatrix<int> &noClassAttr
    for (i=1 ; i <= noClasses ;i++)   {
       pC1[i] = pC[i] * eC[i] / eCsum ;
       if (pC1[i] > 0 && pC[i] < 1.0)
-         Ec -= pC1[i] * log2(pC1[i]) ;
+         Ec -= pC1[i] * mlog2(pC1[i]) ;
       //else merror("estimation::infGainCostImpurity","invalid probability") ;
    }
    return Ec ;

@@ -1,7 +1,7 @@
 // the frontend file for call from R
-#include <stdio.h>
-#include <string.h>
-#include <time.h>
+//#include <stdio.h>
+#include <cstring>
+#include <ctime>
 
 // general constants and data type definitions
 // here you specify whether to compile for  Windows or UNIX
@@ -9,13 +9,9 @@
 // joint method of reporting errors
 #include "error.h"
 
-#if defined(R_PORT)
-#include <R.h>
-#include <Rinternals.h>
-#endif
 #if defined(DEBUG)
 #if defined(MICROSOFT)
-#include <malloc.h>  // for heapcheck
+#include <cmalloc>  // for heapcheck
 #endif
 #endif
 
@@ -23,7 +19,7 @@
 #include "ftree.h"    // decision tree with feature construction
 #include "regtree.h"
 #include "rndforest.h"  // random forests
-#include "utils.h"    // various utillities eg. computing of std. dev.
+#include "utils.h"    // various utillities e.g., computing of std. dev.
 #include "estimator.h"
 #include "estimatorReg.h"
 #include "utils.h"
@@ -31,6 +27,8 @@
 #include "printUtil.h"
 #include "calibrate.h"
 #include "Rfront.h"
+
+using namespace std ;
 
 extern "C" {
 
@@ -63,7 +61,7 @@ SEXP exportProximity(SEXP modelID, SEXP dis){
         bool dist = (bool)INTEGER(dis)[0];
         int mi;
         mi = INTEGER(modelID)[0];
-        // is modelID valid
+    	// is modelID valid
         if (mi < 0 || mi >= allModels.len() || allModels[mi] == 0)
                 return (NULL);
         featureTree *dT = (featureTree*) allModels[mi]; // working Model

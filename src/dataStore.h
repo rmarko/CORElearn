@@ -1,8 +1,7 @@
 #if !defined(DATASTORE_H)
 #define DATASTORE_H
 
-#include <string.h>
-#include <stdio.h>
+#include <cstring>
 
 #include "c45read.h"
 #include "contain.h"

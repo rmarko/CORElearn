@@ -5,7 +5,7 @@
 *
 *********************************************************************/
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "general.h"
 #include "error.h"
@@ -13,7 +13,8 @@
 #include "ftree.h"
 #include "options.h"
 
-// extern Options *opt ;
+using namespace std ;
+
 
 //************************************************************
 //

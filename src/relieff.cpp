@@ -1,5 +1,4 @@
 #include <float.h>
-#include <stdio.h>
 
 //#define PRINT_EACH_K
 //#define PRINT_EACH_ITERATION
@@ -10,7 +9,7 @@
 #include "options.h"
 #include "estimator.h"                
 
-//extern Options *opt ;
+using namespace std ;
 
 
 

@@ -12,16 +12,12 @@
 
 initCore <- function(maxModels=16384)
 {
-	tmp <- .C("initCore",
-			as.integer(maxModels), ## maximal number of models
-			PACKAGE="CORElearn"
-			)
+	tmp <- .C(C_initCore, as.integer(maxModels)) ## maximal number of models
+			
 }
 
 destroyCore <- function()
 {
-	tmp <- .C("destroyCore",
-			PACKAGE="CORElearn"
-			)
+	tmp <- .C(C_destroyCore)
 }
 

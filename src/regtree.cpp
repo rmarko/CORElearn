@@ -7,9 +7,9 @@
 *********************************************************************/
 
 
-#include <stdlib.h>
-#include <string.h>
-#include <float.h>
+#include <cstdlib>
+#include <cstring>
+#include <cfloat>
 
 #include "general.h"
 #include "error.h"
@@ -19,6 +19,7 @@
 #include "mathutil.h"
 #include "constrctReg.h"
 
+using namespace std ;
 
 
 //************************************************************

@@ -1,15 +1,15 @@
 #if !defined(CONTAIN_H)
 #define CONTAIN_H
 
-#include <stdlib.h>
+#include <cstdlib>
 #include "general.h"
 #include "error.h"
 
-
+using namespace std ;
 
 template <class T> T Mmin(T a, T b) {  return ((a<b) ? a : b ) ; }
 template <class T> T Mmax(T a, T b) {  return ((a>b) ? a : b ) ; }
-template <class T>  void swap(T &X, T &Y) { T temp = X ; X = Y ; Y = temp ; }
+template <class T>  void mswap(T &X, T &Y) { T temp = X ; X = Y ; Y = temp ; }
 
 
 /********************************************************************
@@ -430,7 +430,7 @@ template<class T> void marray<T>::sortKlargest(int K)
    while (i > lower)
    {
       i-- ;
-      swap(table[i], table[0]) ;
+      mswap(table[i], table[0]) ;
       pushdownAsc(1, i) ;
    }
    // here elements are ordered in descending order from
@@ -467,7 +467,7 @@ template<class T> void marray<T>::sortKsmallest(int K)
    while (i > lower)
    {
       i-- ;
-      swap(table[i], table[0]) ;
+      mswap(table[i], table[0]) ;
       pushdownDsc(1, i) ;
    }
    // here elements are ordered in descending order from
@@ -502,21 +502,21 @@ template<class T> void marray<T>::pushdownAsc(int first, int last)
        if (last == child2 ) // r has one child at 2*r
        {
           if ( table[parent] < table[child1] )
-             swap(table[parent], table[child1]) ;
+             mswap(table[parent], table[child1]) ;
           break ; // forces a break from the while-loop
        }
        else  // r has two children at 2*r and 2*r+1
           if ( table[parent] < table[child1]  &&
                ! (table[child1] < table[child2]) )
           {  // swap r with left children
-             swap(table[parent], table[child1]) ;
+             mswap(table[parent], table[child1]) ;
              r = child2 ;
           }
           else
             if ( table[parent] < table[child2]  &&
                  table[child1] < table[child2] )
             {  // swap r with left children
-               swap(table[parent], table[child2]) ;
+               mswap(table[parent], table[child2]) ;
                r = child2 + 1 ;
             }
             else // r does not violate partially ordered tree property
@@ -551,21 +551,21 @@ template<class T> void marray<T>::pushdownDsc(int first, int last)
        if (last == child2 ) // r has one child at 2*r
        {
           if ( table[parent] > table[child1] )
-             swap(table[parent], table[child1]) ;
+             mswap(table[parent], table[child1]) ;
           break ; // forces a break from the while-loop
        }
        else  // r has two children at 2*r and 2*r+1
           if ( table[parent] > table[child1]  &&
                ! (table[child1] > table[child2]) )
           {  // swap r with left children
-             swap(table[parent], table[child1]) ;
+             mswap(table[parent], table[child1]) ;
              r = child2 ;
           }
           else
             if ( table[parent] > table[child2]  &&
                  table[child1] > table[child2] )
             {  // swap r with left children
-               swap(table[parent], table[child2]) ;
+               mswap(table[parent], table[child2]) ;
                r = child2 + 1 ;
             }
             else // r does not violate partially ordered tree property
@@ -617,13 +617,13 @@ template<class T> void marray<T>::qsortAsc(void)
       else {
 			k=(l+ir) / 2 ;
 			// median of three: first, middle and last
-         swap(table[k],table[l+1]) ;
+         mswap(table[k],table[l+1]) ;
 			if (table[l+1] > table[ir])
-         	swap(table[l+1], table[ir]) ;
+         	mswap(table[l+1], table[ir]) ;
 			if (table[l] > table[ir])
-				swap(table[l],table[ir]) ;
+				mswap(table[l],table[ir]) ;
 			if (table[l+1] > table[l])
-				swap(table[l+1],table[l]) ;
+				mswap(table[l+1],table[l]) ;
          // table[l] now contain median
 			i=l+1;
 			j=ir;
@@ -635,7 +635,7 @@ template<class T> void marray<T>::qsortAsc(void)
 				do j--; while (table[j] > a);
 				if (j < i)
                break;
-				swap(table[i],table[j]);
+				mswap(table[i],table[j]);
 			}
 			table[l]=table[j];
 			table[j]=a;
@@ -699,13 +699,13 @@ template<class T> void marray<T>::qsortDsc(void)
       else {
 			k=(l+ir) / 2 ;
 			// median of three: first, middle and last
-         swap(table[k],table[l+1]) ;
+         mswap(table[k],table[l+1]) ;
 			if (table[l+1] < table[ir])
-         	swap(table[l+1], table[ir]) ;
+         	mswap(table[l+1], table[ir]) ;
 			if (table[l] < table[ir])
-				swap(table[l],table[ir]) ;
+				mswap(table[l],table[ir]) ;
 			if (table[l+1] < table[l])
-				swap(table[l+1],table[l]) ;
+				mswap(table[l+1],table[l]) ;
          // table[l] now contain median
 			i=l+1;
 			j=ir;
@@ -716,8 +716,8 @@ template<class T> void marray<T>::qsortDsc(void)
 				do i++; while (table[i] > a);
 				do j--; while (table[j] < a);
 				if (j < i)
-               break;
-				swap(table[i],table[j]);
+                   break;
+				mswap(table[i],table[j]);
 			}
 			table[l]=table[j];
 			table[j]=a;
@@ -766,7 +766,7 @@ template<class T> T& marray<T>::select(int k)
         {
 			if (right == left+1 && table[right] < table[left]) // two elements
             {
-				swap(table[left], table[right]) ;
+				mswap(table[left], table[right]) ;
 			}
 			return table[k];
 		}
@@ -776,13 +776,13 @@ template<class T> T& marray<T>::select(int k)
             // Also rearange so that table[left+1] <= table[left], table[right] >= table[left]
 			mid=(left+right) / 2;
 
-			swap(table[mid], table[left+1]) ;
+			mswap(table[mid], table[left+1]) ;
 			if (table[left+1] > table[right])
-				swap(table[left+1], table[right]) ;
+				mswap(table[left+1], table[right]) ;
 			if (table[left] > table[right])
-				swap(table[left], table[right]) ;
+				mswap(table[left], table[right]) ;
 			if (table[left+1] > table[left])
-				swap(table[left+1], table[left]) ;
+				mswap(table[left+1], table[left]) ;
 
             // initialize pointers for partitioning
 			i=left+1;
@@ -794,9 +794,9 @@ template<class T> T& marray<T>::select(int k)
 				do j--; while (table[j] > table[left]);  // scan down to find element < part
 				if (j < i)  // pointers crossed, partitioning complete
                    break;
-				swap(table[i], table[j]);
+				mswap(table[i], table[j]);
 			}
-			swap(table[left], table[j]) ;  // insert partitioning element
+			mswap(table[left], table[j]) ;  // insert partitioning element
 			// keep active the partition that contains the k-th element
             if (j >= k)
                 right=j-1;
@@ -884,7 +884,7 @@ int randBetween(int from, int to) ;
 
 template<class T> void marray<T>::shuffle(void) {
 	for (int i=edge-1 ; i > 0 ; i--)
-		swap(table[i], table[randBetween(0, i+1)]) ;
+		mswap(table[i], table[randBetween(0, i+1)]) ;
 }
 
 
@@ -1206,7 +1206,7 @@ template<class Type> void mmatrix<Type>::shuffleColumn(int colIdx)
        merror("mmatrix::shuffleColumn :","column index out of range") ;
    #endif
 	for (int i=dim1-1 ; i > 0 ; i--)
-		swap(table[colIdx][i], table[colIdx][randBetween(0, i+1)]) ;
+		mswap(table[colIdx][i], table[colIdx][randBetween(0, i+1)]) ;
 }
 
 template<class Type> void mmatrix<Type>::bootstrapColumn(int sourceIdx, int colIdx)

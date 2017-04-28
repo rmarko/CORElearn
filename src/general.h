@@ -14,7 +14,6 @@
 #if defined(R_PORT)
 #include <R.h>
 #include <Rinternals.h>
-#define printf Rprintf
 #endif
 
 // to make additional checks

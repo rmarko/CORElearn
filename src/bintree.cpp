@@ -11,6 +11,8 @@
 
 #include "bintree.h"
 
+using namespace std ;
+
 
 bintree::bintree(bintree &Copy)
 {

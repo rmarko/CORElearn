@@ -11,7 +11,8 @@
    Parallel execution on several cores is supported for speedup.
 }
 \usage{
-  attrEval(formula, data, estimator, costMatrix = NULL, outputNumericSplits=FALSE, ...)
+  attrEval(formula, data, estimator, costMatrix = NULL, 
+           outputNumericSplits=FALSE, ...)
 }
 \arguments{
   \item{formula}{ Either a formula specifying the attributes to be evaluated and the target variable, or a name of target variable, or an index of target variable. }
@@ -139,12 +140,13 @@
 
 # run method ReliefF with exponential rank distance  
 estReliefF <- attrEval(Species ~ ., iris, 
-                            estimator="ReliefFexpRank", ReliefIterations=30)
+                       estimator="ReliefFexpRank", ReliefIterations=30)
 print(estReliefF)
 
 # alternatively and more appropriate for large data sets 
 # one can specify just the target variable
-# estReliefF <- attrEval("Species", iris, estimator="ReliefFexpRank", ReliefIterations=30)
+# estReliefF <- attrEval("Species", iris, estimator="ReliefFexpRank",
+#                        ReliefIterations=30)
 
 # print all available estimators
 infoCore(what="attrEval")

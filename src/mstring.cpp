@@ -1,11 +1,14 @@
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
 
 #include "general.h"
 #include "error.h"
 #include "utils.h"
 #include "mstring.h"
 
+using namespace std ;
+
+using namespace std ;
 
     void mstring::destroy () {
     	if (value) {

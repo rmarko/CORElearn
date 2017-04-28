@@ -1,13 +1,13 @@
-#include <stdlib.h>
-//#include <string.h>
-#include <float.h>
-#include <math.h>
+#include <cstdlib>
+#include <cfloat>
+#include <cmath>
 
 #include "general.h"
 #include "error.h"
 #include "regtree.h"
 #include "mathutil.h"
 
+using namespace std ;
 
 //************************************************************
 //

@@ -7,9 +7,9 @@
 *********************************************************************/
 
 
-#include <stdlib.h>
-#include <string.h>
-#include <float.h>
+#include <cstdlib>
+#include <cstring>
+#include <cfloat>
 
 #include "general.h"
 #include "error.h"
@@ -20,7 +20,7 @@
 #include "constrct.h"
 #include "options.h"
 
-
+using namespace std ;
 
 
 //************************************************************

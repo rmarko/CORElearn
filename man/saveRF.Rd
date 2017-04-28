@@ -45,6 +45,7 @@ loadRF(fileName)
 \examples{
 # use iris data set
 
+
 # build random forests model with certain parameters
 modelRF <- CoreModel(Species ~ ., iris, model="rf", 
               selectionEstimator="MDL",minNodeWeightRF=5,

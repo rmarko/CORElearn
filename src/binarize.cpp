@@ -1,4 +1,4 @@
-#include <float.h>
+#include <cfloat>
 
 #include "general.h"
 #include "error.h"
@@ -10,7 +10,7 @@
 
 //extern Options *opt ;
 
-
+using namespace std ;
 
 
 // ************************************************************
@@ -70,7 +70,7 @@ void estimation::binarizeGeneral(construct &nodeConstruct, int firstFreeDiscSlot
 		for (i = 0 ; i <= NoValues; ++i)
 			order[i] = i ;
 		for (i = 1 ; i < NoValues; ++i) { // shuffle all expect 0th, last can be skipped
-			swap(order[i], order[randBetween(i, NoValues)]) ;
+			mswap(order[i], order[randBetween(i, NoValues)]) ;
 		}
 		for (int idx=1 ; idx <= NoValues ; ++idx) 	{
 			leftVal += valueCount[order[idx]] ;
@@ -717,26 +717,26 @@ void estimation::discretizeEqualWidth(int ContAttrIdx, int noIntervals, marray<d
 		j++ ;
 	if (j == TrainSize)
 		return ; // all values are missing
-	double value, minValue, maxValue ;
-	minValue = maxValue = NumValues(j, ContAttrIdx) ;
+	double value, minVal, maxVal ;
+	minVal = maxVal = NumValues(j, ContAttrIdx) ;
 	for (++j ; j < TrainSize ; j++)
 	{
 		value = NumValues(j, ContAttrIdx) ;
 		if (isNAcont(value))
 			continue ;
-		else if (value < minValue)
-			minValue = value ;
-		else if (value > maxValue)
-			maxValue = value ;
+		else if (value < minVal)
+			minVal = value ;
+		else if (value > maxVal)
+			maxVal = value ;
 	}
-	if (minValue == maxValue)    //  only one non missing value
+	if (minVal == maxVal)    //  only one non missing value
 		return  ;
-    double intervalWidth = (maxValue - minValue) / noIntervals ;
+    double intervalWidth = (maxVal - minVal) / noIntervals ;
 	Bounds.create(noIntervals-1) ;
 
 	for (int i = 1 ; i < noIntervals ; i++)
 	{
-		value = minValue + i * intervalWidth ;
+		value = minVal + i * intervalWidth ;
 		Bounds.addEnd(value) ;
 	}
 }

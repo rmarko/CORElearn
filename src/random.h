@@ -8,8 +8,8 @@
 #if !defined(RANDOM_H_)
 #define RANDOM_H_
 
-#include <stdlib.h>
-#include <time.h>
+#include <cstdlib>
+#include <ctime>
 
 #include "contain.h"
 

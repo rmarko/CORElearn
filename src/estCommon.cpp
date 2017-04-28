@@ -1,11 +1,13 @@
 //#include <stdlib.h>
-#include <float.h>
+#include <cfloat>
 
 #include "general.h"
 #include "error.h"
 #include "estimator.h"
 #include "contain.h"
 #include "options.h"
+
+using namespace std ;
 
 int NoEstimators = 37;
 estDsc estName[38]={

@@ -1,7 +1,5 @@
-#include <stdio.h>
-#include <float.h>
-#include <limits.h>
-//#include <conio.h>
+#include <cfloat>
+#include <climits>
 
 #include "general.h"
 #include "ftree.h"
@@ -12,6 +10,7 @@
 #include "options.h"
 #include "error.h"
 
+using namespace std ;
 
 void forestTree::copy(forestTree &Source)
 {
@@ -44,7 +43,7 @@ int featureTree::buildForest(void) {
    if (opt->rfNoSelAttr==0)
 	    rfNoSelAttr = Mmax(1, intRound(sqrt(double(noAttr)))) ;
    else if (opt->rfNoSelAttr==-1)
-	    rfNoSelAttr = Mmax(1, 1+int(log2(double(noAttr)))) ;
+	    rfNoSelAttr = Mmax(1, 1+int(mlog2(double(noAttr)))) ;
    else if (opt->rfNoSelAttr==-2 || opt->rfNoSelAttr >= noAttr)
       rfNoSelAttr = noAttr ;
    else rfNoSelAttr = opt->rfNoSelAttr ;

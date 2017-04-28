@@ -16,7 +16,7 @@ classPrototypes(model, dataset, noPrototypes=10)
 The function uses \code{predict.CoreModel(model, dataset)} for prediction of the \code{dataset} with
 \code{model}. Based on the returned probabilities, it selects the \code{noPrototypes} instances with highest probabilities for each class to be 
 typical representatives of that class, i.e., prototypes. The prototypes can be
-visualized by calling e.g., 
+visualized by calling e.g., \cr
 \code{plot(model, dataset, rfGraphType="prototypes", noPrototypes = 10)}.
 }
 \value{

@@ -1,7 +1,6 @@
 #if !defined(MSTRING_H)
 #define MSTRING_H
 
-#include <stdlib.h>
 #include "general.h"
 #include "error.h"
 

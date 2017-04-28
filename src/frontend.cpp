@@ -18,16 +18,15 @@
 *
 *********************************************************************/
 
-#include <stdio.h>
-#include <string.h>
-#include <time.h>
+#include <cstring>
+#include <ctime>
 
 #include "general.h"  // general constants and data type definitions
                       // here you specify weather to compile for
                       // Windows or UNIX
 #if defined(DEBUG)
 #if defined(MICROSOFT)
-#include <malloc.h>  // for heapcheck and coreleft
+#include <cmalloc>  // for heapcheck and coreleft
 #endif
 #endif
 
@@ -50,7 +49,7 @@
 #include "printUtil.h"  // utilities for textual display of results
 #include "Rfront.h"     // front end for R interface
 
-
+using namespace std ;
 
 extern int NoEstimators ;
 extern int NoEstimatorsReg ;
@@ -66,7 +65,7 @@ char VersionString[]="CORElearn, "
 #else
 " standalone"
 #endif
-" version 1.49.0, built on " __DATE__ " at " __TIME__
+" version 1.50.3, built on " __DATE__ " at " __TIME__
 #if defined(_OPENMP)
 " with OpenMP support"
 #endif
@@ -90,6 +89,7 @@ void outVersion(FILE *fout)
 
 
 #if !defined(R_PORT)
+#include <cstdio>
 
 int main(int argc, char *argv[]) {
     outVersion(stdout) ;

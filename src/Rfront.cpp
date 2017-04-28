@@ -1,21 +1,16 @@
 // the frontend file for call from R
 
-#include <stdio.h>
-#include <string.h>
-#include <time.h>
+#include <cstring>
+#include <ctime>
+#include <cstdio>
+#include <cstdlib>
 
 #include "general.h"  // general constants and data type definitions
 // here you specify weather to compile for  Windows or UNIX
 
-#if defined(R_PORT)
-#include <R.h>
-#include <Rinternals.h>
-#else
-#define Rprintf printf
-#endif
 #if defined(DEBUG)
 #if defined(MICROSOFT)
-#include <malloc.h>  // for heapcheck
+#include <cmalloc>  // for heapcheck
 #endif
 #endif
 
@@ -24,7 +19,7 @@
 #include "ftree.h"    // decision tree with feature construction
 #include "regtree.h"
 #include "rndforest.h"  // random forests
-#include "utils.h"    // various utilities eg. computing of std. dev.
+#include "utils.h"    // various utilities e.g., computing of std. dev.
 #include "random.h"
 #include "estimator.h"
 #include "estimatorReg.h"
@@ -33,6 +28,14 @@
 #include "printUtil.h"
 #include "calibrate.h"
 #include "Rfront.h"
+
+#if defined(R_PORT)
+#include <R.h>
+#include <Rinternals.h>
+#include <R_ext/Rdynload.h>
+#else
+#define Rprintf printf
+#endif
 
 #if defined(DEBUG_NEW)
 extern int SetSize;
@@ -44,9 +47,65 @@ extern estDsc estName[];
 extern estDsc estNameReg[];
 extern char VersionString[];
 
+using namespace std ;
+
 extern "C" {
 
 marray<dataStore*> allModels; // stores pointers to all the active models, one for each
+
+
+#define CALLDEF(name, n)  {#name, (DL_FUNC) &name, n}
+
+const static R_CallMethodDef R_CallDef[] = {
+   CALLDEF(exportModelRT,1),
+   CALLDEF(exportModelT,1),
+   CALLDEF(exportProximity,2),
+   CALLDEF(printTree2R,1),
+   CALLDEF(printTreeDot2R,1),
+   CALLDEF(exportSizesRF,1),
+   CALLDEF(exportSumOverLeavesRF,1),
+   CALLDEF(exportModel,1),
+   CALLDEF(noEqualRows,7),
+
+   {NULL, NULL, 0}
+};
+
+const static R_CMethodDef R_CDef[] = {
+   CALLDEF(exportVarImportanceCluster, 3),
+   CALLDEF(initCore, 1),
+   CALLDEF(destroyCore, 0),
+   CALLDEF(versionCore, 1),
+   CALLDEF(destroyOneCoreModel, 1),
+   CALLDEF(buildCoreModel, 15),
+   CALLDEF(predictWithCoreModel, 11),
+   CALLDEF(estimateCoreReg, 16),
+   CALLDEF(estimateCore, 17),
+   CALLDEF(rfAttrEval, 2),
+   CALLDEF(rfOOB, 4),
+   CALLDEF(ordEvalCore, 19),
+   CALLDEF(modelEvaluate, 20),
+   CALLDEF(modelEvaluateReg, 8),
+   CALLDEF(optionsInOut, 3),
+   CALLDEF(saveRF, 2),
+   CALLDEF(readRF, 2),
+   CALLDEF(calibrate, 9),
+   CALLDEF(discretize, 18),
+   CALLDEF(testNA, 3),
+   CALLDEF(testRPORT, 1),
+   CALLDEF(testCoreRand, 2),
+   CALLDEF(testClassPseudoRandom, 5),
+   CALLDEF(testTime, 1),
+   {NULL, NULL, 0}
+};
+
+void R_init_CORElearn(DllInfo *dll)
+{
+    R_registerRoutines(dll, R_CDef, R_CallDef, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
+    R_forceSymbols(dll, TRUE);
+
+}
+
 
 // on entry to library
 void initCore(int *maxModels) {
@@ -66,7 +125,7 @@ void testNA(int *t, double *x, int *a) {
 		*x = y / y;
 	}
 	//u.d = *x;
-	//printf("%08x  %08x", u.i.p1, u.i.p0); // OK for little endian
+	//Rprintf("%08x  %08x", u.i.p1, u.i.p0); // OK for little endian
 	a[0] = isNAcont(*x);
 	a[1] = isNaN(*x);
 }
@@ -339,7 +398,7 @@ void destroyCore() {
 #endif
 
 #if defined(DEBUG_NEW)
-	printf("Still allocated memory blocks: %ld\n",SetSize);
+	Rprintf("Still allocated memory blocks: %ld\n",SetSize);
 #endif
 }
 
@@ -1187,6 +1246,7 @@ SEXP noEqualRows(SEXP data1, SEXP data2, SEXP nrowsd1, SEXP nrowsd2, SEXP ncols,
 
 #endif
 
+#if !defined(R_PORT)
 void simRcall() {
 	int maxModel = 128;
 	initCore(&maxModel);
@@ -1227,10 +1287,10 @@ void simRcall() {
 			(char**) optionsVal);
 
 	for (i = 0; i < noPredict; i++) {
-		printf("%d  %d  ", i + 1, pred[i]);
+		Rprintf("%d  %d  ", i + 1, pred[i]);
 		for (j = 0; j < noDiscreteValues[0]; j++)
-			printf("%5.3f ", prob[i + j * noPredict]);
-		printf("\n");
+			Rprintf("%5.3f ", prob[i + j * noPredict]);
+		Rprintf("\n");
 	}
 	destroyOneCoreModel(&modelID);
 
@@ -1247,6 +1307,7 @@ void simRcall() {
 	delete[] interval;
 	delete[] calProb;
 }
+#endif
 
 } //extern "C"
 

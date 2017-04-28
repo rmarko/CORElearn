@@ -85,8 +85,8 @@ calibration <- calibrate(cal$class, predCal$prob[,class1], class1=class1,
 
 # apply the calibration to the testing set
 calibratedProbs <- applyCalibration(predTest$prob[,class1], calibration)
-# the calibration of probabilities can be visualized with reliabilityPlot function
-
+# the calibration of probabilities can be visualized with 
+# reliabilityPlot function
 
 }
 \keyword{ models }

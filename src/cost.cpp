@@ -1,12 +1,13 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <float.h>
+#include <cstdlib>
+#include <cfloat>
 
 #include "general.h"
 #include "error.h"
 #include "estimator.h"
 #include "contain.h"
 #include "utils.h"
+
+using namespace std ;
 
 
 // ***************************************************************************

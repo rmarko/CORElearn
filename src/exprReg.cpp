@@ -7,7 +7,7 @@
 *
 *********************************************************************/
 
-#include <float.h>
+#include <cfloat>
 
 #include "general.h"
 #include "exprReg.h"
@@ -632,7 +632,7 @@ char* exprReg::descriptionString(exprRegNode* Node)
 double exprReg::mdlCost(int noAttributes)
 {
   // coding the length of the exprRegession
-  double codeLen = log2((double)(noAttributes+1)) ; //  log2(noAttributes and constant term)
+  double codeLen = mlog2((double)(noAttributes+1)) ; //  log2(noAttributes and constant term)
   // selection of attributes
   marray<double> Multinom(2,0.0) ;  
   Multinom[0] = noCoefficients() ;

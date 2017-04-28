@@ -94,7 +94,7 @@ The method returns a list with following components:
 \item{file}{the file to store the results}
 \item{rndFile}{the file to store random normalizations}
 
-The statistics used are median, 1st quartile, 3rd quartile,  low and high percentile selected by 
+The statistics used are median, 1st quartile, 3rd quartile, low and high percentile selected by \cr
 \code{ordEvalNormalizingPercentile}, mean, standard deviation, and expected probability according to value distribution.  
 With these statistics we can visualize significance of reinforcements using adapted box and whiskers plot.  
 }

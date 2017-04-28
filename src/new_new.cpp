@@ -4,7 +4,9 @@
 #include "new_new.h"
 #include "error.h"
  
- const int MAX_SET = 100000; // high limit
+using namespace std ;
+
+const int MAX_SET = 100000; // high limit
 
 void* Set[MAX_SET];
 int    SetSize = 0;

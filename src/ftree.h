@@ -1,7 +1,6 @@
 #if !defined(FTREE_H)
 #define FTREE_H
 
-#include <stdio.h>
 
 #include "general.h"
 #include "dataStore.h"

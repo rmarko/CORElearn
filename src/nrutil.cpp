@@ -1,14 +1,15 @@
-#include <stdio.h>
-#include <stddef.h>
-#include <stdlib.h>
-#include <limits.h>
-#include <float.h>
+#include <cstddef>
+#include <cstdlib>
+#include <climits>
+#include <cfloat>
 
 #include "general.h"
 #include "error.h"
 
 #define NR_END 1
 #define FREE_ARG char*
+
+using namespace std ;
 
 void nrmerror(const char *error_text)
 {

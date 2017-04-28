@@ -17,7 +17,7 @@ The parameters in this group may be used inside model construction
 via \code{\link{CoreModel}} and feature evaluation in \code{\link{attrEval}}. See \code{\link{attrEval}}
 for description of relevant evaluation methods. 
 
-Parameters \code{attrEvaluationInstances}, \code{binaryEvaluation}, 
+Parameters \code{attrEvaluationInstances}, \code{binaryEvaluation}, \cr
 \code{binarySplitNumericAttributes}
 are applicable to all attribute evaluation methods. In models which need feature evaluation (e.g., trees,
 random forests) they affect the selection of splits in the nodes.

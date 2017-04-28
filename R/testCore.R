@@ -208,12 +208,7 @@ outputResult <- function(testName, status, failMessage, continue)
 
 singleTestNA <- function(t, x)
 {
-    .C("testNA",
-    as.integer(t),
-    as.double(x),
-    out=integer(2),
-    NAOK=TRUE,
-    PACKAGE="CORElearn")$out
+    .C(C_testNA,  as.integer(t), as.double(x), out=integer(2), NAOK=TRUE)$out
 }
 
 testCoreNA <- function(continue=TRUE)
@@ -230,7 +225,7 @@ testCoreNA <- function(continue=TRUE)
 
 testCoreRPORT <- function(continue=TRUE)
 {
-    tmp <- .C("testRPORT", a=as.integer(2), PACKAGE="CORElearn")
+    tmp <- .C(C_testRPORT, a=as.integer(2))
     ok <- tmp$a == 1
 	outputResult("testCoreRPORT", ok, tmp$a, continue)
 	all(ok)
@@ -243,7 +238,7 @@ testCoreRand <- function(continue=TRUE)
     state <- .Random.seed
     x <- runif(n)
     .Random.seed <<- state
-    y <- .C("testCoreRand", as.integer(n), a=double(n), PACKAGE="CORElearn")$a
+    y <- .C(C_testCoreRand, as.integer(n), a=double(n))$a
 	ok <- x == y
 	outputResult("testCoreRand", ok, paste(x[1], x[2], y[1], y[2]), continue)
 	all(ok)
@@ -291,18 +286,17 @@ allTests <- function(continue=TRUE, timed=FALSE)
 testClassPseudoRandom <- function(s, k, m)
 {
 	n <- length(s)
-	aux <- .C("testClassPseudoRandom",
+	aux <- .C(C_testClassPseudoRandom,
 		n = as.integer(n),
 		s = as.integer(s),
 		k = as.integer(k),
 		m = as.integer(m),
-		x = double(k*m),
-		PACKAGE="CORElearn")
+		x = double(k*m))
 	matrix(aux$x, nrow=k, ncol=m)
 }
 
 testTime <- function()
 {
-	.C("testTime", x=double(1), PACKAGE="CORElearn")$x
+	.C(C_testTime, x=double(1))$x
 }
 

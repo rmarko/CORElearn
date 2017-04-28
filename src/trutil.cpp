@@ -5,10 +5,10 @@
 *
 *********************************************************************/
 
-#include <string.h>     // dealing with names
-#include <stdlib.h>     // min, max
-#include <stdio.h>
-#include <float.h>
+#include <cstring>     // dealing with names
+#include <cstdlib>     // min, max
+#include <cfloat>
+#include <cstdio>
 
 #include "general.h"
 #include "utils.h"
@@ -19,7 +19,7 @@
 #include "frontend.h"
 #include "options.h"
 
-
+using namespace std ;
 
 //************************************************************
 //

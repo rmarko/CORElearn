@@ -2,8 +2,8 @@
 #define NEW_NEW_H
 
 #include <new>
-#include <stddef.h>
-#include <malloc.h>
+#include <cstddef>
+#include <cmalloc>
 
    #define ALLOC  malloc
    #define FREE   free

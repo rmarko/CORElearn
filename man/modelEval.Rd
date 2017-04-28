@@ -7,9 +7,9 @@
   computes  some statistics evaluating the quality of the model.
 }
 \usage{
-modelEval(model=NULL, correctClass, predictedClass, predictedProb=NULL, 
-          costMatrix=NULL, priorClProb = NULL, 
-          avgTrainPrediction = NULL, beta = 1) 
+modelEval(model=NULL, correctClass, predictedClass, 
+          predictedProb=NULL, costMatrix=NULL, 
+          priorClProb = NULL, avgTrainPrediction = NULL, beta = 1) 
 }
 
 \arguments{
@@ -60,7 +60,7 @@ modelEval(model=NULL, correctClass, predictedClass, predictedProb=NULL,
   \item{AUC}{Area under the ROC curve}
   \item{predictionMatrix}{matrix of miss-classifications also confusion matrix}
   \item{sensitivity}{sensitivity for two class problems (also called accuracy of the positive class, i.e., acc+, or true positive rate),
-       \deqn{s\rm{sensitivity} = \frac{TP}{TP+FN}}{sensitivity=TP/(TP+FN)}}
+       \deqn{rm{sensitivity} = \frac{TP}{TP+FN}}{sensitivity=TP/(TP+FN)}}
   \item{specificity}{specificity for two class problems (also called accuracy of the negative class, i.e., acc-, or true negative rate),
       \deqn{\rm{specificity} = \frac{TN}{TN+FP}}{specificity=TN/(TN+FP)}}
   \item{brierScore}{Brier score of predicted probabilities (the original Brier's definition which scores all the classes not only the correct one)}
@@ -74,7 +74,7 @@ modelEval(model=NULL, correctClass, predictedClass, predictedProb=NULL,
        \deqn{G=\sqrt{\rm{senstivity} \cdot \rm{specificity}} }{G=sqrt(sensitivity * specificity) }}
   \item{KS}{Kolmogorov-Smirnov statistics defined for binary classification problems, reports the distance between the probability distributions of positive class
   for positive and negative instances, see (Hand, 2005), value 0 means no separation, and value 1 means perfect separation,
-   \deqn{KS = \max_t |TPR(t)-FPR(t)|}{KS = max_t |TPR(t)-FPR(t)|}, 
+   \deqn{KS = \max_t |TPR(t)-FPR(t)|}{KS = max_t |TPR(t)-FPR(t)|,} 
    see definitions of TPR and FPR below}
   \item{TPR}{true positive rate \eqn{TPR = \frac{TP}{TP+FN}}{TPR = TP / (TP+FN)} at maximal value of \code{KS} statistics}   
   \item{FPR}{false positive rate \eqn{FPR = \frac{FP}{FP+TN}}{FPR = FP / (FP+TN)} at maximal value of \code{KS} statistics}   
@@ -117,7 +117,8 @@ print(mEval)
 noClasses <- length(levels(iris[["Species"]]))
 costMatrix <- 1 - diag(noClasses)
 costMatrix[3,1] <- costMatrix[3,2] <- 5 # assume class 3 is more valuable  
-mEvalCost <- modelEval(model, iris[["Species"]], pred$class, pred$prob, costMatrix=costMatrix)
+mEvalCost <- modelEval(model, iris[["Species"]], pred$class, pred$prob, 
+                       costMatrix=costMatrix)
 print(mEvalCost)
 
 destroyModels(model) # clean up

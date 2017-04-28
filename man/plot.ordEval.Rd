@@ -65,7 +65,7 @@
     \item \code{ylabRight} label of right vertical axis; the default value is 
     \item \code{colors} a vector with four colors specifying colors of reinforcement bars for down, down_beyond, up, and up_beyond, respectively.
      If set to NULL this produces black and white graph with shades of gray.
-     The colors down_beyond and up_beyond depict the confidence interval if parameter \code{ciDisplay="color"}. 
+     The colors down_beyond and up_beyond depict the confidence interval if parameter \code{ciDisplay="color"}. \cr
      The default values are \code{colors=c("green","lightgreen","blue","lightblue")}.
     }   
      
@@ -83,9 +83,10 @@
     # printOrdEval(oe)
     
     # the same effect we achieve by storing results to files
-    tmp <- ordEval(class ~ ., dat, file="profiles.oe", rndFile="profiles.oer", 
-                   ordEvalNoRandomNormalizers=200)   
-    plotOrdEval(file="profiles.oe", rndFile="profiles.oer",graphType="attrBar")
+    tmp <- ordEval(class ~ ., dat, file="profiles.oe", 
+                  rndFile="profiles.oer", ordEvalNoRandomNormalizers=200)   
+    plotOrdEval(file="profiles.oe", rndFile="profiles.oer",
+                graphType="attrBar")
     
 }
 \references{ 

@@ -5,12 +5,14 @@
 *
 *********************************************************************/
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "general.h"
 #include "error.h"
 #include "utils.h"
 #include "regtree.h"
+
+using namespace std ;
 
 //************************************************************
 //
@@ -77,7 +79,7 @@ double regressionTree::mdlCode(binnodeReg *Node)
               if (intValue <= 1.0)
                  codeLen = 0.0 ;
               else 
-                codeLen =  log2(intValue) ;
+                codeLen =  mlog2(intValue) ;
               break ;
         case 3: // linear by MSE (all attributes included)
         case 4: // linear by MDL (only selected attributes)

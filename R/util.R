@@ -31,6 +31,7 @@ prepare.Data <- function(data, formulaIn, dependent, class.lev=NULL, numericAsOr
 	nummap <- integer(0);
 	skipmap <- integer(0)
 	for (i in seq(along=data)) {
+		
 		# check validity of columns
 		if (all(is.na(data[[i]]))) { #
 			if (i > 1) {
@@ -81,6 +82,10 @@ prepare.Data <- function(data, formulaIn, dependent, class.lev=NULL, numericAsOr
 			
 		} else {
 			column <- matrix(as.double(data[[i]]),ncol=1,dimnames=list(NULL,col.names[i]))
+			column[is.nan(column)] <- NA
+			column[is.infinite(column) & column > 0] <- .Machine$double.xmax
+			column[is.infinite(column) & column < 0] <- - .Machine$double.xmax
+			
 			numdata <- cbind(numdata,column);
 			nummap <- c(nummap,i);
 		}

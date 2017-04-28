@@ -123,29 +123,32 @@ trainIdxs <- sample(x=nrow(iris), size=0.7*nrow(iris), replace=FALSE)
 testIdxs <- c(1:nrow(iris))[-trainIdxs]
 
 # build random forests model with certain parameters
-# setting maxThreads to 0 or more than 1 forces utilization of several processor cores 
+# setting maxThreads to 0 or more than 1 forces 
+# utilization of several processor cores 
 modelRF <- CoreModel(Species ~ ., iris[trainIdxs,], model="rf",
               selectionEstimator="MDL",minNodeWeightRF=5,
               rfNoTrees=100, maxThreads=1)
 print(modelRF) # simple visualization, test also others with function plot
-pred <- predict(modelRF, iris[testIdxs,], type="both") # prediction on testing set
+# prediction on testing set
+pred <- predict(modelRF, iris[testIdxs,], type="both") 
 mEval <- modelEval(modelRF, iris[["Species"]][testIdxs], pred$class, pred$prob)
 print(mEval) # evaluation of the model
 # visualization of individual predictions and the model
 \dontrun{
 require(ExplainPrediction)
-explainVis(modelRF, iris[trainIdxs,], iris[testIdxs,], method="EXPLAIN",visLevel="model",
-           problemName="iris", fileType="none", classValue=1, displayColor="color") 
+explainVis(modelRF, iris[trainIdxs,], iris[testIdxs,], method="EXPLAIN",
+           visLevel="model", problemName="iris", fileType="none", 
+           classValue=1, displayColor="color") 
 # turn on the history in visualization window to see all instances
-explainVis(modelRF, iris[trainIdxs,], iris[testIdxs,], method="EXPLAIN",visLevel="instance",
-           problemName="iris", fileType="none", classValue=1, displayColor="color") 
+explainVis(modelRF, iris[trainIdxs,], iris[testIdxs,], method="EXPLAIN",
+           visLevel="instance", problemName="iris", fileType="none", 
+           classValue=1, displayColor="color") 
 }
 destroyModels(modelRF) # clean up
 
 
 # build decision tree with naive Bayes in the leaves
 # more appropriate for large data sets one can specify just the target variable
-
 modelDT <- CoreModel("Species", iris, model="tree", modelType=4)
 print(modelDT)
 destroyModels(modelDT) # clean up
@@ -174,7 +177,8 @@ pred <- rep(NA,ncases)
 fit <- NULL
 for (i in unique(ind)) {
     # Delete the previous model, if there is one.
-    fit <- CoreModel(Species ~ ., iris[ind!=i,], model="rf", rfNoTrees=20, maxThreads=1)
+    fit <- CoreModel(Species ~ ., iris[ind!=i,], model="rf", 
+                     rfNoTrees=20, maxThreads=1)
     pred[ind==i] <- predict(fit, iris[ind==i,], type="class")
     if (!is.null(fit)) destroyModels(fit) # dispose model no longer needed
  

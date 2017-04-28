@@ -9,11 +9,10 @@
 *********************************************************************/
 
 
-#include <stdio.h>      // reading options and configuration file
-#include <string.h>     // building menu items
-#include <stdio.h>      // converting strings to doubleing point
-#include <stdlib.h>
-#include <time.h>
+#include <cstring>     // building menu items
+#include <cstdio>
+#include <cstdlib>
+#include <ctime>
 #if defined(_OPENMP)
 #include <omp.h>
 #endif
@@ -29,12 +28,16 @@
 #include <errno.h>
 #endif
 
-
-//#include "ftree.h"
 #include "utils.h"
 #include "menu.h"
 #include "error.h"
 #include "options.h"
+
+#if !defined(R_PORT)
+#define Rprintf printf
+#endif
+
+using namespace std ;
 
 extern char VersionString[] ;
 extern int NoEstimators ;
@@ -347,38 +350,6 @@ void Options::processOptions(void)
 
 //************************************************************
 //
-//                      readConfig
-//                      ----------
-//
-//      reads parameters for feature tree from given file
-//
-//************************************************************
-int Options::readConfig(char* ConfigName)
-{
-	int i,len;
-	FILE *from ;
-    if ((from=fopen(ConfigName,"r"))==NULL) {
-        merror("Cannot open configuration file ",ConfigName) ;
-        return 0 ;
-    }
-
-	char buf[MaxNameLen]  ;
-	while (fgets(buf,MaxNameLen,from) != NULL) {
-		len = (int)strlen(buf) ;
-		for (i=0; i<len; i++) {
-			if (buf[i] == '\n' || buf[i] == '\r' || strchr(commentSeparators, buf[i]) != NULL)
-			buf[i] = '\0' ;
-		}
-		strTrim(buf) ;
-		if (buf[0] != '\0')
-			assignOption(buf) ;
-	}
-	fclose(from) ;
-	return 1 ;
-}
-
-//************************************************************
-//
 //                      readConfigFromString
 //                      ----------
 //
@@ -422,351 +393,6 @@ int Options::optionsFromStrings(int noOptions, marray<char* > &optionsName, marr
 
 
 
-//************************************************************
-//
-//                      writeConfig
-//                      -----------
-//
-//      writes parameters for feature tree to given file
-//
-//************************************************************
-int Options::writeConfig(char* ConfigName) const
-{
-    FILE *to ;
-    if ((to=fopen(ConfigName,"w"))==NULL)
-    {
-       merror("Cannot create configuration file ",ConfigName) ;
-       return 0 ;
-    }
-    outConfig(to) ;
-    if (ferror(to))  {
-      merror("Cannot write parameters to configuration file", ConfigName) ;
-      fclose(to) ;
-      return 0;
-    }
-
-    fclose(to) ;
-    return 1 ;
-
-}
-
-
-
-void Options::outConfig(FILE *to) const
-{
-    fprintf(to, "# Options file for %s\n", VersionString) ;
-	fprintf(to, "# Note the conventions:\n");
-    fprintf(to, "# each option is on a separate line, the order of options is not important\n") ;
-	fprintf(to, "# everything after # character is ignored\n") ;
-	fprintf(to, "# if # is the first character, entire line is ignored\n") ;
-    fprintf(to, "# the format of options is\n") ;
-	fprintf(to, "# keyword=keyValue\n") ;
-	fprintf(to, "#\n") ;
-
-    fprintf(to, "# ---------- File and data options ----------\n") ;
-
-    // Domain name
-	fprintf(to,"domainName=%s  # domain name\n", domainName.getConstValue() ) ;
-
-    // Data directory
-	fprintf(to,"dataDirectory=%s  # data directory\n", dataDirectory.getConstValue()) ;
-
-    // Results directory
-	fprintf(to,"resultsDirectory=%s  # results directory\n", resultsDirectory.getConstValue()) ;
-
-    // Definiton of train/test data splits
-    fprintf(to,"# Types of supported splits to training/testing data:  \n") ;
-    fprintf(to,"# 0-read from files, 1-cross validation, 2-stratified cross-validation,\n") ;
-    fprintf(to,"# 3-leave one out CV, 4-all data is for training, 5-random split to train/test\n") ;
-	fprintf(to, "splitSelection=%d  # definiton of train/test data splits\n", splitSelection) ;
-
-    // Number of of iterations (data split to work on)
-	fprintf(to, "numberOfSplits=%d  # number of data splits\n", numberOfSplits) ;
-
-    // Train proportion
-	fprintf(to,"trainProportion=%f  # the proportion of training instances in case of random split to train/test\n", trainProportion) ;
-
-    // random seed for split
-	fprintf(to,"rndSeedSplit=%d  # random seed for data split determination (0-take from clock)\n", rndSeedSplit) ;
-
-    // Split index
-	fprintf(to,"splitIdx=%d  # in case of work on single split, the index of that split\n", splitIdx) ;
-
-
-    // estimators
-
-    fprintf(to, "# ---------- Estimation of attributes options ----------\n") ;
-
-    // Treat all attributes as binary
-	fprintf(to,"binaryEvaluation=%s  # treat attributes as binary\n", (binaryEvaluation ? "Y" : "N")) ;
-
-    // Treat numerical attribute splits as binary in applicable measures
-	fprintf(to,"binaryEvaluateNumericAttributes=%s  # treat numerical attributes' splits as binary\n", (binaryEvaluateNumericAttributes ? "Y" : "N")) ;
-
-    // multi-class extension for two-class-only evaluation measures
-	fprintf(to,"multiclassEvaluation=%d  # multi-class extension for two-class-only evaluation measures (1-average of all-pairs, 2-best of all-pairs, 3-average of one-against-all, 4-best of one-against-all)\n", multiclassEvaluation) ;
-
-	// Number of examples  for estimation
-	fprintf(to,"attrEvaluationInstances=%d  # number of instances for attribute evaluation (0 means all)\n", attrEvaluationInstances) ;
-
-	// minimal leaf's weight
-	fprintf(to,"minNodeWeightEst=%.2f  # minimal split to be evaluated\n", minNodeWeightEst) ;
-
-
-    // switches for clasification estimation
-    fprintf(to, "# Classification estimators \n") ;
-    for (int estIdx = 1 ; estIdx <= NoEstimators ; estIdx++)
-	   fprintf(to, "est%s=%s  # %s\n" , estName[estIdx].brief, (estOn[estIdx] ? "Y" : "N"), estName[estIdx].dsc) ;
-    // switches for regression estimation
-    fprintf(to, "# Regressionn estimators \n") ;
-    for (int estIdxReg = 1 ; estIdxReg <= NoEstimatorsReg ; estIdxReg++)
-	   fprintf(to, "est%s=%s  # %s\n" , estNameReg[estIdxReg].brief, (estOnReg[estIdxReg] ? "Y" : "N"), estNameReg[estIdxReg].dsc) ;
-
-
-    fprintf(to, "# ---------- ReliefF options ----------\n") ;
-
-     // number of iterations for ReliefF's estimation
-	fprintf(to,"ReliefIterations=%d  # number of iterations for all variants of Relief  (0-TrainSize, -1-ln(TrainSize), -2-sqrt(TrainSize))\n",ReliefIterations) ;
-
-    // Default proportion of numeric attribute to consider value equal
-	fprintf(to,"numAttrProportionEqual=%f  # proportion of numerical attribute's range to consider values equal\n",numAttrProportionEqual) ;
-
-    // Default proportion of numeric attribute to consider value different
-	fprintf(to,"numAttrProportionDifferent=%f  # proportion of numerical attribute's range to consider values different\n",numAttrProportionDifferent) ;
-
-    // Number of neighbours to consider - k
-	fprintf(to, "kNearestEqual=%d  # number of neighbours to consider in equal k nearest evaluation\n",kNearestEqual) ;
-
-    // Number of neighbours in  distance density estimation
-	fprintf(to, "kNearestExpRank=%d  # number of neighbours to consider in exponential rank distance evaluation\n",kNearestExpRank) ;
-
-    // Quotient in Gaussian function of distance density
-	fprintf(to, "quotientExpRankDistance=%f  # quotient in exponential rank distance evaluation\n",quotientExpRankDistance) ;
-
-        // ordEval
-    fprintf(to, "# ---------- ordEval algorithm ----------\n") ;
-
-    // number of randomly shuffled attributes for normalization of each attribute
-	fprintf(to,"ordEvalNoRandomNormalizers=%d  # number of randomly shuffled attributes for normalization of each attribute\n",ordEvalNoRandomNormalizers) ;
-
-	// bootstrap sampling or permutation for random normalizers
-	fprintf(to,"ordEvalBootstrapNormalize=%s  # bootstrap sampling or permutation for random normalizers\n", (ordEvalBootstrapNormalize ? "Y" : "N")) ;
-
-	// the alpha for confidence interval
-	fprintf(to,"ordEvalNormalizingPercentile=%f  # the percentile defining the length of confidence interval obtained with random normalization", ordEvalNormalizingPercentile) ;
-
-	// attribute weights
-	fprintf(to, " # weights of the attributes in the distance measure, 0 means no weighting, the format is: a;w_1,w_2,...w_a\n") ;
-	fprintf(to,"attrWeights=%d   ", attrWeights.filled()) ;
-	for (int iA = 1 ; iA < attrWeights.filled() ; ++iA)
-	     fprintf(to,"%f ", attrWeights[iA]) ;
-
-
-    fprintf(to, "\n# ---------- Stopping options ----------\n") ;
-
-    // minimal leaf's weight for trees
-	fprintf(to,"minNodeWeightTree=%.2f  # minimal weight of a decision or regression tree node\n", minNodeWeightTree) ;
-
-    // minimal leaf's weight for RF
-	fprintf(to,"minNodeWeightRF=%.2f  # minimal weight of a random forest tree node\n", minNodeWeightRF) ;
-
-    // Proportion of all examples in a node to stop
-	fprintf(to,"relMinNodeWeight=%f  # minimal proportion of training instances in a tree node to stop\n",relMinNodeWeight) ;
-
-    // Majority class proportion in a node
-	fprintf(to,"majorClassProportion=%f  # proportion of majority class in a tree node\n",majorClassProportion) ;
-
-    // Proportion of standard deviation to stop
-	fprintf(to,"rootStdDevProportion=%f  # proportion of root's standard deviation in a node\n",rootStdDevProportion) ;
-
-    // minimal weight of non-majority class in a node to continue splitting
-	fprintf(to,"minNonMajorityWeight=%.2f  # minimal weight of a non-majority class in a node to continue splitting\n", minNonMajorityWeight) ;
-
-    fprintf(to, "# ---------- Building  options ----------\n") ;
-
-	// selected estimator
-    fprintf(to, "# Available classification estimators:") ;
-    const int maxLineFilled = 80 ;
-    int ei, lineFilled = maxLineFilled +1 ;
-    for (ei = 1 ; ei <= NoEstimators ; ei++) {
-    	if (lineFilled > maxLineFilled) {
-    		// go to new line
-    		fprintf(to,"\n#\t") ;
-    		lineFilled = 0 ;
-    	}
-    	fprintf(to, "%2d-%s,", ei, estName[ei].dsc);
-    	lineFilled += 3 + strlen(estName[ei].dsc) ;
-    }
-	fprintf(to, "\nselectionEstimator=%d  # estimator for selection of attributes and binarization in classification (1-%d)\n" , selectionEstimator, NoEstimators) ;
-
-    fprintf(to, "# Available regression estimators:") ;
-    lineFilled = maxLineFilled +1 ;
-    for (ei = 1 ; ei <= NoEstimatorsReg ; ei++) {
-     	if (lineFilled > maxLineFilled) {
-     		// go to new line
-     		fprintf(to,"\n#\t") ;
-     		lineFilled = 0 ;
-     	}
-     	fprintf(to, "%2d-%s,", ei, estNameReg[ei].dsc);
-     	lineFilled += 3 + strlen(estNameReg[ei].dsc) ;
-     }
- 		fprintf(to, "\nselectionEstimatorReg=%d  # estimator for selection of attributes and binarization in regression (1-%d)\n" , selectionEstimatorReg, NoEstimatorsReg) ;
-
-    // Minimal ReliefF's estimate of attribute to consider it further
-	fprintf(to,"minReliefEstimate=%f  # in case of any Relief's variant the minimal evaluation of attribute to considerd it useful\n",minReliefEstimate) ;
-
-	// Minimal probabillity of example to consider it
-	fprintf(to,"minInstanceWeight=%.2f  # minimal weight of an instance\n",minInstanceWeight) ;
-
-    // Type of classification models used in the leafs
-    fprintf(to, "# Available classification models: \n") ;
-	fprintf(to, "#\t1-majority class, 2-k-nearest neighbours, 3-k-nearest neighbors with kernel, 4-simple Bayes\n") ;
-	fprintf(to,"modelType=%d  # type of classification models used in tree leaves (1-4)\n", modelType) ;
-
-    // Type of regression models used in the leafs
-    fprintf(to,"# Available regression models: \n") ;
-    fprintf(to,"#\t1-mean predicted value, 2-median predicted value, 3-linear by MSE, 4-linear by MDL,\n");
-    fprintf(to,"#\t5-linear reduced as in M5, 6-kNN, 7-Gaussian kernel regression, 8-locally weighted linear regression\n") ;
-	fprintf(to,"modelTypeReg=%d  # type of regression models used in the leafs (1-8)\n", modelTypeReg) ;
-
-    // k in k-nearest neighbour models
-	fprintf(to,"kInNN=%d  # number of neighbours in k-nearest neighbours models (0-all)\n", kInNN) ;
-
-    // kernel  in kNN models
-	fprintf(to,"nnKernelWidth=%f  # kernel width in k-nearest neighbours models\n", nnKernelWidth) ;
-
-    // type of discretization for simple Bayes
-	fprintf(to, "bayesDiscretization=%d  # type of discretization for naive Bayes models (1-greedy with selection estimator, 2-equal frequency)\n", bayesDiscretization) ;
-
-	// number of intervals for equal frequency discretization for simple Bayes models
-	fprintf(to, "discretizationIntervals=%d  # number of intervals in equal frequency or equal width discretization, e.g., for naive Bayes models\n", discretizationIntervals) ;
-
-
-    fprintf(to, "# ---------- Constructive induction options ----------\n") ;
-
-    // which constructive operators to use
-	fprintf(to,"constructionMode=%d  # constructive operators sum (1-single, 2-conjunction, 4-addition, 8-multiplication, e.g., all-1+2+4+8 i.e. 15) \n", constructionMode) ;
-
-    // depth to which to perform  constructive induction
-	fprintf(to,"constructionDepth=%d  # maximal depth (height) of the tree to do construction (0-do not do construction, 1-only at root, ...)\n", constructionDepth) ;
-
-    // depth to which to perform  constructive induction
-	fprintf(to,"noCachedInNode=%d  # number of cached attributes in each node where construction was performed\n", noCachedInNode) ;
-
-    // construction estimator for classification
-	fprintf(to, "constructionEstimator=%d  # estimator for constructive induction (1-%d)\n" , constructionEstimator, NoEstimators) ;
-
-	// construction estimator for regression
-	fprintf(to, "constructionEstimatorReg=%d  # estimator for constructive induction (1-%d)\n" , constructionEstimatorReg, NoEstimatorsReg) ;
-
-    // beam size for beam search
-	fprintf(to,"beamSize=%d  # size of the beam\n",beamSize) ;
-
-    // maximal size of constructs
-	fprintf(to,"maxConstructSize=%d  # maximal size of constructs\n", maxConstructSize) ;
-
-
-    // Number of times current discretization can be worse than the best
-	fprintf(to,"discretizationLookahead=%d  # number of times current discretization can be worse than the best (0-try all possibilities)\n",discretizationLookahead) ;
-
-    // Maximal number of points to try discretization
-	fprintf(to,"discretizationSample=%d  # maximal number of points to try discretization (0 means all sensible)\n",discretizationSample) ;
-
-    // Maximal number of attribute values to try finding binary split exhaustively (if more greedily or randomly)
-	fprintf(to,"maxValues4Exhaustive=%d  # maximal number of values of a discrete attribute to try finding split exhaustively)\n",maxValues4Exhaustive) ;
-
-    // Maximal number of attribute values to try finding binary split greedily (if more randomly)
-	fprintf(to,"maxValues4Greedy=%d  # maximal number of values of a discrete attribute to try finding split greedily - if more randomly)\n",maxValues4Greedy) ;
-
-
-    fprintf(to, "# ---------- Pruning  options ----------\n") ;
-
-    // selected pruner for classification
-	fprintf(to, "selectedPruner=%d  # pruning method used in classification (0-none, 1-with m-estimate)\n", selectedPruner) ;
-
-    // selected pruner for regression
-	fprintf(to, "selectedPrunerReg=%d  # pruning method used in regression (0-none, 1-MDL, 2-with m-estimate, 3-as in M5, 4-error complexity as in CART (fixed alpha))\n", selectedPrunerReg) ;
-
-	// Precision of model coefficients in MDL pruning procedure
-	fprintf(to, "mdlModelPrecision=%f  # precision of model coefficients in MDL pruning\n",mdlModelPrecision) ;
-
-    // Precision of error coefficients in MDL
-	fprintf(to, "mdlErrorPrecision=%f  # precision of errors in MDL pruning\n",mdlErrorPrecision) ;
-
-    // m - estimate for pruning
-	fprintf(to,"mEstPruning=%f  # m-estimate for pruning\n",mEstPruning) ;
-
-    // alpha for error complexity pruning
-	fprintf(to,"alphaErrorComplexity=%f  # alpha for error complexity pruning\n",alphaErrorComplexity) ;
-
-
-    fprintf(to, "# ---------- Random forest options ----------\n") ;
-
-    // number of trees in forest
-	fprintf(to,"rfNoTrees=%d  # number of trees in the random forest\n",rfNoTrees) ;
-
-    // Number of randomly selected attributes in the node
-	fprintf(to,"rfNoSelAttr=%d  # number of randomly selected attributes in the node (0-sqrt(numOfAttr), -1-log_2(numOfAttr)+1, -2-all)\n",rfNoSelAttr) ;
-
-    // Use multiple estimators
-	fprintf(to,"rfMultipleEst=%s  # use multiple estimators in the forest\n",(rfMultipleEst ? "Y" : "N")) ;
-
-    // Number of nearest instances for weighted rf classification
-	fprintf(to,"rfkNearestEqual=%d  # number of nearest intances for weighted random forest classification (0-no weighting)\n",rfkNearestEqual) ;
-
-    // Proportion of trees where attribute probabilities are weighted with ReliefF
-	fprintf(to,"rfPropWeightedTrees=%f  # proportion of trees where attribute probabilities are weighted\n",rfPropWeightedTrees) ;
-
-    // Predict with majority class, otherwise use class distribution
-	fprintf(to,"rfPredictClass=%s  # predict with majority class (otherwise with class distribution)\n",(rfPredictClass ? "Y" : "N")) ;
-
-    // Evaluate attributes with out-of-bag evaluation
-	fprintf(to,"rfAttrEvaluate=%s  # evaluate attributes with random forest out-of-bag evaluation\n",(rfAttrEvaluate ? "Y" : "N")) ;
-
-	// Proportion of the training examples to be used in learning (0.0-bootstrap replication)
-	fprintf(to,"rfSampleProp=%f  #proportion of the training set to be used in learning (0.0-bootstrap replication)\n",rfSampleProp) ;
-
-	// Number of leaves in the individual trees (0-build a whole tree)
-	fprintf(to,"rfNoTerminals=%d  # number of leaves in each tree (0-build the whole tree)\n",rfNoTerminals) ;
-
-	// Type of regularization (0-no regularization, 1-global regularization, 2-local regularization)
-	fprintf(to,"rfRegType=%d  # type of regularization (0-no regularization, 1-global regularization, 2-local regularization)\n",rfRegType) ;
-
-	// Regularization parameter Lambda
-	fprintf(to,"rfRegLambda=%f  # regularization parameter lambda\n",rfRegLambda) ;
-
-    // random seed for forest
-	fprintf(to,"rfRndSeed=%d  # random seed for random forest (0-take from clock)\n", rfRndSeed) ;
-
-
-	fprintf(to, "# ---------- Prediction parameters ----------\n") ;
-
-	// probability smoothing type
-	fprintf(to,"smoothingType=%d  # type of prediction smoothing (0 - no smoothing, 1 - additive smoothing, 2 - pure Laplace's smoothing, 3 - m-estimate smoothing, 4 - Zadrozny-Elkan m-smoothing i.e., m * p_c)\n",smoothingType) ;
-
-	// probability smoothing parameter value
-	fprintf(to,"smoothingValue=%f  # additional parameter for some types of smoothing (additive, m-estimate, Zadrozny-Elkan)\n",smoothingValue) ;
-
-	fprintf(to, "# ---------- Other  options ----------\n") ;
-
-	// maxThreads - maximal number of active threads
-	fprintf(to,"maxThreads=%d  # maximal number of active threads (0-allow OpenMP to set defaults)\n",maxThreads) ;
-
-    // print tree also in dot format
-	fprintf(to,"printTreeInDot=%s  # print tree also in dot format\n", (printTreeInDot ? "Y" : "N")) ;
-
-    // output probability distribution
-	fprintf(to,"outProbDistr=%s  # output class probability distribution for predicted instances\n", (outProbDistr ? "Y" : "N")) ;
-
-	// Editor for options
-	fprintf(to,"defaultEditor=%s  # editor for options file\n",defaultEditor.getConstValue()) ;
-
-    // Missing values indicator
-	fprintf(to,"NAstring=%s  # string indicating missing value",NAstring.getConstValue()) ;
-
- }
-
-
 void Options::parseOption(char *optString, char *keyword, char *key) {
     int strIdx = 0 ;
     strTrim(optString) ;
@@ -804,9 +430,9 @@ void Options::parseOption(char *optString, char *keyword, char *key) {
 		action = key ;
 	}
 	else if (strcmp(keyword, "optionFile")==0 || strcmp(keyword, "o")==0) {
-		printf("\nReading configuration file %s . . .", key) ;
+		Rprintf("\nReading configuration file %s . . .", key) ;
 		readConfig(key) ;
-	    printf(" done.\n") ;
+	    Rprintf(" done.\n") ;
 	}
 	else if (strcmp(keyword, "domainName")==0) {
 		// domain name
@@ -1502,3 +1128,383 @@ void Options::parseOption(char *optString, char *keyword, char *key) {
 	}
     }
 }
+
+
+
+//************************************************************
+//
+//                      readConfig
+//                      ----------
+//
+//      reads parameters for feature tree from given file
+//
+//************************************************************
+
+int Options::readConfig(char* ConfigName)
+{
+	int i,len;
+	FILE *from ;
+    if ((from=fopen(ConfigName,"r"))==NULL) {
+        merror("Cannot open configuration file ",ConfigName) ;
+        return 0 ;
+    }
+
+	char buf[MaxNameLen]  ;
+	while (fgets(buf,MaxNameLen,from) != NULL) {
+		len = (int)strlen(buf) ;
+		for (i=0; i<len; i++) {
+			if (buf[i] == '\n' || buf[i] == '\r' || strchr(commentSeparators, buf[i]) != NULL)
+			buf[i] = '\0' ;
+		}
+		strTrim(buf) ;
+		if (buf[0] != '\0')
+			assignOption(buf) ;
+	}
+	fclose(from) ;
+	return 1 ;
+}
+
+//************************************************************
+//
+//                      writeConfig
+//                      -----------
+//
+//      writes parameters for feature tree to given file
+//
+//************************************************************
+int Options::writeConfig(char* ConfigName) const
+{
+    FILE *to ;
+    if ((to=fopen(ConfigName,"w"))==NULL)
+    {
+       merror("Cannot create configuration file ",ConfigName) ;
+       return 0 ;
+    }
+    outConfig(to) ;
+    if (ferror(to))  {
+      merror("Cannot write parameters to configuration file", ConfigName) ;
+      fclose(to) ;
+      return 0;
+    }
+
+    fclose(to) ;
+    return 1 ;
+
+}
+
+
+
+void Options::outConfig(FILE *to) const
+{
+    fprintf(to, "# Options file for %s\n", VersionString) ;
+	fprintf(to, "# Note the conventions:\n");
+    fprintf(to, "# each option is on a separate line, the order of options is not important\n") ;
+	fprintf(to, "# everything after # character is ignored\n") ;
+	fprintf(to, "# if # is the first character, entire line is ignored\n") ;
+    fprintf(to, "# the format of options is\n") ;
+	fprintf(to, "# keyword=keyValue\n") ;
+	fprintf(to, "#\n") ;
+
+    fprintf(to, "# ---------- File and data options ----------\n") ;
+
+    // Domain name
+	fprintf(to,"domainName=%s  # domain name\n", domainName.getConstValue() ) ;
+
+    // Data directory
+	fprintf(to,"dataDirectory=%s  # data directory\n", dataDirectory.getConstValue()) ;
+
+    // Results directory
+	fprintf(to,"resultsDirectory=%s  # results directory\n", resultsDirectory.getConstValue()) ;
+
+    // Definiton of train/test data splits
+    fprintf(to,"# Types of supported splits to training/testing data:  \n") ;
+    fprintf(to,"# 0-read from files, 1-cross validation, 2-stratified cross-validation,\n") ;
+    fprintf(to,"# 3-leave one out CV, 4-all data is for training, 5-random split to train/test\n") ;
+	fprintf(to, "splitSelection=%d  # definiton of train/test data splits\n", splitSelection) ;
+
+    // Number of of iterations (data split to work on)
+	fprintf(to, "numberOfSplits=%d  # number of data splits\n", numberOfSplits) ;
+
+    // Train proportion
+	fprintf(to,"trainProportion=%f  # the proportion of training instances in case of random split to train/test\n", trainProportion) ;
+
+    // random seed for split
+	fprintf(to,"rndSeedSplit=%d  # random seed for data split determination (0-take from clock)\n", rndSeedSplit) ;
+
+    // Split index
+	fprintf(to,"splitIdx=%d  # in case of work on single split, the index of that split\n", splitIdx) ;
+
+
+    // estimators
+
+    fprintf(to, "# ---------- Estimation of attributes options ----------\n") ;
+
+    // Treat all attributes as binary
+	fprintf(to,"binaryEvaluation=%s  # treat attributes as binary\n", (binaryEvaluation ? "Y" : "N")) ;
+
+    // Treat numerical attribute splits as binary in applicable measures
+	fprintf(to,"binaryEvaluateNumericAttributes=%s  # treat numerical attributes' splits as binary\n", (binaryEvaluateNumericAttributes ? "Y" : "N")) ;
+
+    // multi-class extension for two-class-only evaluation measures
+	fprintf(to,"multiclassEvaluation=%d  # multi-class extension for two-class-only evaluation measures (1-average of all-pairs, 2-best of all-pairs, 3-average of one-against-all, 4-best of one-against-all)\n", multiclassEvaluation) ;
+
+	// Number of examples  for estimation
+	fprintf(to,"attrEvaluationInstances=%d  # number of instances for attribute evaluation (0 means all)\n", attrEvaluationInstances) ;
+
+	// minimal leaf's weight
+	fprintf(to,"minNodeWeightEst=%.2f  # minimal split to be evaluated\n", minNodeWeightEst) ;
+
+
+    // switches for clasification estimation
+    fprintf(to, "# Classification estimators \n") ;
+    for (int estIdx = 1 ; estIdx <= NoEstimators ; estIdx++)
+	   fprintf(to, "est%s=%s  # %s\n" , estName[estIdx].brief, (estOn[estIdx] ? "Y" : "N"), estName[estIdx].dsc) ;
+    // switches for regression estimation
+    fprintf(to, "# Regressionn estimators \n") ;
+    for (int estIdxReg = 1 ; estIdxReg <= NoEstimatorsReg ; estIdxReg++)
+	   fprintf(to, "est%s=%s  # %s\n" , estNameReg[estIdxReg].brief, (estOnReg[estIdxReg] ? "Y" : "N"), estNameReg[estIdxReg].dsc) ;
+
+
+    fprintf(to, "# ---------- ReliefF options ----------\n") ;
+
+     // number of iterations for ReliefF's estimation
+	fprintf(to,"ReliefIterations=%d  # number of iterations for all variants of Relief  (0-TrainSize, -1-ln(TrainSize), -2-sqrt(TrainSize))\n",ReliefIterations) ;
+
+    // Default proportion of numeric attribute to consider value equal
+	fprintf(to,"numAttrProportionEqual=%f  # proportion of numerical attribute's range to consider values equal\n",numAttrProportionEqual) ;
+
+    // Default proportion of numeric attribute to consider value different
+	fprintf(to,"numAttrProportionDifferent=%f  # proportion of numerical attribute's range to consider values different\n",numAttrProportionDifferent) ;
+
+    // Number of neighbours to consider - k
+	fprintf(to, "kNearestEqual=%d  # number of neighbours to consider in equal k nearest evaluation\n",kNearestEqual) ;
+
+    // Number of neighbours in  distance density estimation
+	fprintf(to, "kNearestExpRank=%d  # number of neighbours to consider in exponential rank distance evaluation\n",kNearestExpRank) ;
+
+    // Quotient in Gaussian function of distance density
+	fprintf(to, "quotientExpRankDistance=%f  # quotient in exponential rank distance evaluation\n",quotientExpRankDistance) ;
+
+        // ordEval
+    fprintf(to, "# ---------- ordEval algorithm ----------\n") ;
+
+    // number of randomly shuffled attributes for normalization of each attribute
+	fprintf(to,"ordEvalNoRandomNormalizers=%d  # number of randomly shuffled attributes for normalization of each attribute\n",ordEvalNoRandomNormalizers) ;
+
+	// bootstrap sampling or permutation for random normalizers
+	fprintf(to,"ordEvalBootstrapNormalize=%s  # bootstrap sampling or permutation for random normalizers\n", (ordEvalBootstrapNormalize ? "Y" : "N")) ;
+
+	// the alpha for confidence interval
+	fprintf(to,"ordEvalNormalizingPercentile=%f  # the percentile defining the length of confidence interval obtained with random normalization", ordEvalNormalizingPercentile) ;
+
+	// attribute weights
+	fprintf(to, " # weights of the attributes in the distance measure, 0 means no weighting, the format is: a;w_1,w_2,...w_a\n") ;
+	fprintf(to,"attrWeights=%d   ", attrWeights.filled()) ;
+	for (int iA = 1 ; iA < attrWeights.filled() ; ++iA)
+	     fprintf(to,"%f ", attrWeights[iA]) ;
+
+
+    fprintf(to, "\n# ---------- Stopping options ----------\n") ;
+
+    // minimal leaf's weight for trees
+	fprintf(to,"minNodeWeightTree=%.2f  # minimal weight of a decision or regression tree node\n", minNodeWeightTree) ;
+
+    // minimal leaf's weight for RF
+	fprintf(to,"minNodeWeightRF=%.2f  # minimal weight of a random forest tree node\n", minNodeWeightRF) ;
+
+    // Proportion of all examples in a node to stop
+	fprintf(to,"relMinNodeWeight=%f  # minimal proportion of training instances in a tree node to stop\n",relMinNodeWeight) ;
+
+    // Majority class proportion in a node
+	fprintf(to,"majorClassProportion=%f  # proportion of majority class in a tree node\n",majorClassProportion) ;
+
+    // Proportion of standard deviation to stop
+	fprintf(to,"rootStdDevProportion=%f  # proportion of root's standard deviation in a node\n",rootStdDevProportion) ;
+
+    // minimal weight of non-majority class in a node to continue splitting
+	fprintf(to,"minNonMajorityWeight=%.2f  # minimal weight of a non-majority class in a node to continue splitting\n", minNonMajorityWeight) ;
+
+    fprintf(to, "# ---------- Building  options ----------\n") ;
+
+	// selected estimator
+    fprintf(to, "# Available classification estimators:") ;
+    const int maxLineFilled = 80 ;
+    int ei, lineFilled = maxLineFilled +1 ;
+    for (ei = 1 ; ei <= NoEstimators ; ei++) {
+    	if (lineFilled > maxLineFilled) {
+    		// go to new line
+    		fprintf(to,"\n#\t") ;
+    		lineFilled = 0 ;
+    	}
+    	fprintf(to, "%2d-%s,", ei, estName[ei].dsc);
+    	lineFilled += 3 + strlen(estName[ei].dsc) ;
+    }
+	fprintf(to, "\nselectionEstimator=%d  # estimator for selection of attributes and binarization in classification (1-%d)\n" , selectionEstimator, NoEstimators) ;
+
+    fprintf(to, "# Available regression estimators:") ;
+    lineFilled = maxLineFilled +1 ;
+    for (ei = 1 ; ei <= NoEstimatorsReg ; ei++) {
+     	if (lineFilled > maxLineFilled) {
+     		// go to new line
+     		fprintf(to,"\n#\t") ;
+     		lineFilled = 0 ;
+     	}
+     	fprintf(to, "%2d-%s,", ei, estNameReg[ei].dsc);
+     	lineFilled += 3 + strlen(estNameReg[ei].dsc) ;
+     }
+ 		fprintf(to, "\nselectionEstimatorReg=%d  # estimator for selection of attributes and binarization in regression (1-%d)\n" , selectionEstimatorReg, NoEstimatorsReg) ;
+
+    // Minimal ReliefF's estimate of attribute to consider it further
+	fprintf(to,"minReliefEstimate=%f  # in case of any Relief's variant the minimal evaluation of attribute to considerd it useful\n",minReliefEstimate) ;
+
+	// Minimal probabillity of example to consider it
+	fprintf(to,"minInstanceWeight=%.2f  # minimal weight of an instance\n",minInstanceWeight) ;
+
+    // Type of classification models used in the leafs
+    fprintf(to, "# Available classification models: \n") ;
+	fprintf(to, "#\t1-majority class, 2-k-nearest neighbours, 3-k-nearest neighbors with kernel, 4-simple Bayes\n") ;
+	fprintf(to,"modelType=%d  # type of classification models used in tree leaves (1-4)\n", modelType) ;
+
+    // Type of regression models used in the leafs
+    fprintf(to,"# Available regression models: \n") ;
+    fprintf(to,"#\t1-mean predicted value, 2-median predicted value, 3-linear by MSE, 4-linear by MDL,\n");
+    fprintf(to,"#\t5-linear reduced as in M5, 6-kNN, 7-Gaussian kernel regression, 8-locally weighted linear regression\n") ;
+	fprintf(to,"modelTypeReg=%d  # type of regression models used in the leafs (1-8)\n", modelTypeReg) ;
+
+    // k in k-nearest neighbour models
+	fprintf(to,"kInNN=%d  # number of neighbours in k-nearest neighbours models (0-all)\n", kInNN) ;
+
+    // kernel  in kNN models
+	fprintf(to,"nnKernelWidth=%f  # kernel width in k-nearest neighbours models\n", nnKernelWidth) ;
+
+    // type of discretization for simple Bayes
+	fprintf(to, "bayesDiscretization=%d  # type of discretization for naive Bayes models (1-greedy with selection estimator, 2-equal frequency)\n", bayesDiscretization) ;
+
+	// number of intervals for equal frequency discretization for simple Bayes models
+	fprintf(to, "discretizationIntervals=%d  # number of intervals in equal frequency or equal width discretization, e.g., for naive Bayes models\n", discretizationIntervals) ;
+
+
+    fprintf(to, "# ---------- Constructive induction options ----------\n") ;
+
+    // which constructive operators to use
+	fprintf(to,"constructionMode=%d  # constructive operators sum (1-single, 2-conjunction, 4-addition, 8-multiplication, e.g., all-1+2+4+8 i.e. 15) \n", constructionMode) ;
+
+    // depth to which to perform  constructive induction
+	fprintf(to,"constructionDepth=%d  # maximal depth (height) of the tree to do construction (0-do not do construction, 1-only at root, ...)\n", constructionDepth) ;
+
+    // depth to which to perform  constructive induction
+	fprintf(to,"noCachedInNode=%d  # number of cached attributes in each node where construction was performed\n", noCachedInNode) ;
+
+    // construction estimator for classification
+	fprintf(to, "constructionEstimator=%d  # estimator for constructive induction (1-%d)\n" , constructionEstimator, NoEstimators) ;
+
+	// construction estimator for regression
+	fprintf(to, "constructionEstimatorReg=%d  # estimator for constructive induction (1-%d)\n" , constructionEstimatorReg, NoEstimatorsReg) ;
+
+    // beam size for beam search
+	fprintf(to,"beamSize=%d  # size of the beam\n",beamSize) ;
+
+    // maximal size of constructs
+	fprintf(to,"maxConstructSize=%d  # maximal size of constructs\n", maxConstructSize) ;
+
+
+    // Number of times current discretization can be worse than the best
+	fprintf(to,"discretizationLookahead=%d  # number of times current discretization can be worse than the best (0-try all possibilities)\n",discretizationLookahead) ;
+
+    // Maximal number of points to try discretization
+	fprintf(to,"discretizationSample=%d  # maximal number of points to try discretization (0 means all sensible)\n",discretizationSample) ;
+
+    // Maximal number of attribute values to try finding binary split exhaustively (if more greedily or randomly)
+	fprintf(to,"maxValues4Exhaustive=%d  # maximal number of values of a discrete attribute to try finding split exhaustively)\n",maxValues4Exhaustive) ;
+
+    // Maximal number of attribute values to try finding binary split greedily (if more randomly)
+	fprintf(to,"maxValues4Greedy=%d  # maximal number of values of a discrete attribute to try finding split greedily - if more randomly)\n",maxValues4Greedy) ;
+
+
+    fprintf(to, "# ---------- Pruning  options ----------\n") ;
+
+    // selected pruner for classification
+	fprintf(to, "selectedPruner=%d  # pruning method used in classification (0-none, 1-with m-estimate)\n", selectedPruner) ;
+
+    // selected pruner for regression
+	fprintf(to, "selectedPrunerReg=%d  # pruning method used in regression (0-none, 1-MDL, 2-with m-estimate, 3-as in M5, 4-error complexity as in CART (fixed alpha))\n", selectedPrunerReg) ;
+
+	// Precision of model coefficients in MDL pruning procedure
+	fprintf(to, "mdlModelPrecision=%f  # precision of model coefficients in MDL pruning\n",mdlModelPrecision) ;
+
+    // Precision of error coefficients in MDL
+	fprintf(to, "mdlErrorPrecision=%f  # precision of errors in MDL pruning\n",mdlErrorPrecision) ;
+
+    // m - estimate for pruning
+	fprintf(to,"mEstPruning=%f  # m-estimate for pruning\n",mEstPruning) ;
+
+    // alpha for error complexity pruning
+	fprintf(to,"alphaErrorComplexity=%f  # alpha for error complexity pruning\n",alphaErrorComplexity) ;
+
+
+    fprintf(to, "# ---------- Random forest options ----------\n") ;
+
+    // number of trees in forest
+	fprintf(to,"rfNoTrees=%d  # number of trees in the random forest\n",rfNoTrees) ;
+
+    // Number of randomly selected attributes in the node
+	fprintf(to,"rfNoSelAttr=%d  # number of randomly selected attributes in the node (0-sqrt(numOfAttr), -1-log_2(numOfAttr)+1, -2-all)\n",rfNoSelAttr) ;
+
+    // Use multiple estimators
+	fprintf(to,"rfMultipleEst=%s  # use multiple estimators in the forest\n",(rfMultipleEst ? "Y" : "N")) ;
+
+    // Number of nearest instances for weighted rf classification
+	fprintf(to,"rfkNearestEqual=%d  # number of nearest intances for weighted random forest classification (0-no weighting)\n",rfkNearestEqual) ;
+
+    // Proportion of trees where attribute probabilities are weighted with ReliefF
+	fprintf(to,"rfPropWeightedTrees=%f  # proportion of trees where attribute probabilities are weighted\n",rfPropWeightedTrees) ;
+
+    // Predict with majority class, otherwise use class distribution
+	fprintf(to,"rfPredictClass=%s  # predict with majority class (otherwise with class distribution)\n",(rfPredictClass ? "Y" : "N")) ;
+
+    // Evaluate attributes with out-of-bag evaluation
+	fprintf(to,"rfAttrEvaluate=%s  # evaluate attributes with random forest out-of-bag evaluation\n",(rfAttrEvaluate ? "Y" : "N")) ;
+
+	// Proportion of the training examples to be used in learning (0.0-bootstrap replication)
+	fprintf(to,"rfSampleProp=%f  #proportion of the training set to be used in learning (0.0-bootstrap replication)\n",rfSampleProp) ;
+
+	// Number of leaves in the individual trees (0-build a whole tree)
+	fprintf(to,"rfNoTerminals=%d  # number of leaves in each tree (0-build the whole tree)\n",rfNoTerminals) ;
+
+	// Type of regularization (0-no regularization, 1-global regularization, 2-local regularization)
+	fprintf(to,"rfRegType=%d  # type of regularization (0-no regularization, 1-global regularization, 2-local regularization)\n",rfRegType) ;
+
+	// Regularization parameter Lambda
+	fprintf(to,"rfRegLambda=%f  # regularization parameter lambda\n",rfRegLambda) ;
+
+    // random seed for forest
+	fprintf(to,"rfRndSeed=%d  # random seed for random forest (0-take from clock)\n", rfRndSeed) ;
+
+
+	fprintf(to, "# ---------- Prediction parameters ----------\n") ;
+
+	// probability smoothing type
+	fprintf(to,"smoothingType=%d  # type of prediction smoothing (0 - no smoothing, 1 - additive smoothing, 2 - pure Laplace's smoothing, 3 - m-estimate smoothing, 4 - Zadrozny-Elkan m-smoothing i.e., m * p_c)\n",smoothingType) ;
+
+	// probability smoothing parameter value
+	fprintf(to,"smoothingValue=%f  # additional parameter for some types of smoothing (additive, m-estimate, Zadrozny-Elkan)\n",smoothingValue) ;
+
+	fprintf(to, "# ---------- Other  options ----------\n") ;
+
+	// maxThreads - maximal number of active threads
+	fprintf(to,"maxThreads=%d  # maximal number of active threads (0-allow OpenMP to set defaults)\n",maxThreads) ;
+
+    // print tree also in dot format
+	fprintf(to,"printTreeInDot=%s  # print tree also in dot format\n", (printTreeInDot ? "Y" : "N")) ;
+
+    // output probability distribution
+	fprintf(to,"outProbDistr=%s  # output class probability distribution for predicted instances\n", (outProbDistr ? "Y" : "N")) ;
+
+	// Editor for options
+	fprintf(to,"defaultEditor=%s  # editor for options file\n",defaultEditor.getConstValue()) ;
+
+    // Missing values indicator
+	fprintf(to,"NAstring=%s  # string indicating missing value",NAstring.getConstValue()) ;
+
+ }
+

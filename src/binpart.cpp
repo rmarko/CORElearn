@@ -1,5 +1,5 @@
-#include <limits.h>
-#include <float.h>
+#include <climits>
+#include <cfloat>
 
 #include "general.h"
 #include "error.h"
@@ -10,6 +10,9 @@
 #if !defined(LLONG_MAX)
 #define LLONG_MAX 9223372036854775807LL
 #endif
+
+using namespace std ;
+
 
 booleanT binPartition::incLeft(void)
 {

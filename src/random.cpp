@@ -9,6 +9,8 @@
 #include "error.h"
 #include "random.h"
 
+using namespace std ;
+
 // ******** mrg32k5a from L'Ecuyer99  **********
 //######################
 

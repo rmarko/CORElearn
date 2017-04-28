@@ -1,3 +1,6 @@
+CORElearn-1.50.2, 2017-03-27: changed the name of swap functio
+CORElearn-1.50.1, 2017-03-24: bug fixes, registration of C routines in R
+CORElearn-1.50.0, 2017-03-17: bug fixes, improving C++ code, adding files cleanup, configure.win and cleanup.win
 CORElearn-1.49.0, 2016-11-23: adding reliabilityPlot, bug fixes for calibration 
 CORElearn-1.48.0, 2016-07-23: improving ordEval plot and ordEval 
 CORElearn-1.47.5, 2016-07-09: bug fixes 

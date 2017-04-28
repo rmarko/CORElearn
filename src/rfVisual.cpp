@@ -1,5 +1,5 @@
-#include <math.h>
-#include <float.h>
+#include <cmath>
+#include <cfloat>
 
 #include "general.h"
 #include "error.h"
@@ -9,6 +9,8 @@
 #include "utils.h"
 #include "binnode.h"
 #include "binnodeReg.h"
+
+using namespace std ;
 
 #if defined(R_PORT)
 SEXP featureTree::T2Rpart()

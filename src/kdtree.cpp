@@ -1,5 +1,5 @@
-#include <limits.h>
-#include <float.h>
+#include <climits>
+#include <cfloat>
 
 #include "general.h"
 #include "error.h"
@@ -7,6 +7,7 @@
 #include "utils.h"
 #include "kdtree.h"
 
+using namespace std ;
 
 void kdNode::copy(kdNode &Source)
 {

@@ -123,15 +123,15 @@ public:
    void copy(const Options &cp) ;
    void setDefault(void) ;
    void processOptions(void) ;
-   int readConfig(char* ConfigName) ;
    int readConfigFromString(char* optionsString) ;
-   void outConfig(FILE *to) const ;
-   int writeConfig(char* ConfigName) const ;
    void parseOption(char *optString, char *keyword, char *key) ;
    void assignOption(char *optString) ;
    void assignOption(char *keyword, char *key)  ;
    int optionsFromStrings(int noOptions, marray<char* > &optionsName, marray<char* > &optionsVal) ;
 
+   int readConfig(char* ConfigName) ;
+   void outConfig(FILE *to) const ;
+   int writeConfig(char* ConfigName) const ;
 
 
 } ;

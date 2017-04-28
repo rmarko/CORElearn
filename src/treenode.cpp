@@ -1,5 +1,5 @@
-#include <stdlib.h>
-#include <float.h>
+#include <cstdlib>
+#include <cfloat>
 
 #include "general.h"
 #include "error.h"
@@ -9,7 +9,7 @@
 #include "constrct.h"
 #include "options.h"
 
-//extern Options *opt ;
+using namespace std ;
 
 // ************************************************************
 //
@@ -308,7 +308,7 @@ void featureTree::selectBeam(marray<construct> &Beam, marray<construct> &stepCac
    // put first into the beam without checking
    Beam[0] = Candidates[SortArray[0].value] ;
    BeamEst[0] = SortArray[0].key ;
-   swap(SortArray[SortArray.filled()-1], SortArray[0]) ;
+   mswap(SortArray[SortArray.filled()-1], SortArray[0]) ;
    SortArray.pushdownAsc(1, SortArray.filled()-1) ;
 
    int pos, beamIdx = 1 ;
@@ -319,7 +319,7 @@ void featureTree::selectBeam(marray<construct> &Beam, marray<construct> &stepCac
    while (i >= 1 && beamIdx < Beam.len())
    {
       i-- ;
-      swap(SortArray[i], SortArray[0]) ;
+      mswap(SortArray[i], SortArray[0]) ;
       SortArray.pushdownAsc(1, i) ;
 
       // check this construct if it is equal to any of

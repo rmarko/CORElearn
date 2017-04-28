@@ -30,7 +30,7 @@ allTests(continue=TRUE, timed=FALSE)
 }
 
 \details{
-Functions \code{testCoreClass()}, \code{testCoreAttrEval()}, \code{testCoreReg()} run
+Functions \code{testCoreClass()}, \code{testCoreAttrEval()}, \code{testCoreReg()} evaluate
 functions \code{CoreModel()}, \code{predict.CoreModel()}, \code{modelEval()}, and
 \code{attrEval()} and perform a partial check of the obtained results.
 
@@ -38,7 +38,7 @@ Function \code{testNA()} performs a test of consistency NA and NaN between R and
 
 Functions \code{testCoreRPORT()} and \code{testCoreRand()} test, whether the
 \code{R_PORT} directive is defined in C code and whether R random number
-generator is used. These tests are mostly for debugging.
+generator is used. These tests are mostly used for debugging.
 
 Function \code{allTests()} calls all the above functions and prints a table
 of the results. If an error is found, a more detailed information

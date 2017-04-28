@@ -7,8 +7,8 @@
   which groups scores and probabilities to show calibration of probabilities in given probability bands.
   }
 \usage{
-reliabilityPlot(probScore, trueProb, titleText="", boxing="equipotent", noBins=10, 
-                classValue = 1, printWeight=FALSE) 
+reliabilityPlot(probScore, trueProb, titleText="", boxing="equipotent", 
+                noBins=10, classValue = 1, printWeight=FALSE) 
 }
 \arguments{
   \item{probScore}{ A vector of predicted probabilities for a given class \code{classValue}. }
@@ -41,7 +41,8 @@ or the true class values from which the method will form 0 and 1 values correspo
 \code{\link{calibrate}}.
 }
 \examples{
-# generate data, one part for training, one part for calibration, one part for testing
+# generate data consisting from 3 parts:
+#  one part for training, one part for calibration, one part for testing
 train <-classDataGen(noInst=200)
 cal <-classDataGen(noInst=200)
 test <- classDataGen(noInst=200)

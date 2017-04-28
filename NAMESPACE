@@ -1,11 +1,12 @@
-useDynLib(CORElearn, .registration = TRUE)
+useDynLib(CORElearn, .registration = TRUE, .fixes = "C_")
 
 export(attrEval, allTests, infoCore, classDataGen, CoreModel, destroyModels, getCoreModel,
+        predict.CoreModel,display.CoreModel,plot.CoreModel,plot.ordEval,display,
 		getRFsizes, modelEval, loadRF, ordDataGen, ordEval, paramCoreIO, plotOrdEval, printOrdEval,
 		regDataGen, rfAttrEval, rfOOB, saveRF, testCoreClass, testCoreAttrEval, testCoreReg,
 		testCoreOrdEval, testCoreNA, testCoreRPORT, testCoreRand, testClassPseudoRandom,
 		testTime, versionCore, calibrate, applyCalibration, reliabilityPlot, preparePlot, rfProximity, rfAttrEvalClustering,
-		rfClustering, rfOutliers, classPrototypes, getRpartModel, display, discretize, applyDiscretization,
+		rfClustering, rfOutliers, classPrototypes, getRpartModel, discretize, applyDiscretization,
 		intervalMidPoint, noEqualRows
 )
 

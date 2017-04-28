@@ -1,4 +1,4 @@
-#include <float.h>
+#include <cfloat>
 
 #include "general.h"
 #include "error.h"
@@ -6,6 +6,8 @@
 #include "ftree.h"
 #include "regtree.h"
 #include "utils.h"
+
+using namespace std ;
 
 int featureTree::predictR(marray<int> &predictedClass, marray<double> &predictedProb) {
 	int i, j;

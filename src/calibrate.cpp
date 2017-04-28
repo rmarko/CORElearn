@@ -5,8 +5,7 @@
  *      Author: rmarko
  */
 
-#include <stdio.h>
-#include <float.h>
+#include <cfloat>
 
 #include "general.h"
 #include "contain.h"
@@ -14,6 +13,8 @@
 #include "utils.h"
 #include "dataStore.h"
 #include "calibrate.h"
+
+using namespace std ;
 
 double Calibrate::cal(double p) {
 	// find appropriate with bisection. the highest interval entry has to be the sentinel

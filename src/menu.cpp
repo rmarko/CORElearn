@@ -6,8 +6,6 @@
 *
 *********************************************************************/
 
-#include <stdio.h>
-#include <string.h>
 
 #include "general.h"
 #include "error.h"
@@ -15,7 +13,11 @@
 
 
 #if !defined(R_PORT)
+#include <cstdio>
+#include <cstring>
 const int ScreenWidth = 80 ;
+
+using namespace std ;
 
 int textMenu(const char* Title, char const* Item[],int NoItems)
 {

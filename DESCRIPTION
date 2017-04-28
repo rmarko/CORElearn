@@ -1,20 +1,20 @@
 Package: CORElearn
 Title: Classification, Regression and Feature Evaluation
-Version: 1.49.0
-Date: 2016-11-23
+Version: 1.50.3
+Date: 2017-03-28
 Author: Marko Robnik-Sikonja and Petr Savicky
 Maintainer: "Marko Robnik-Sikonja" <marko.robnik@fri.uni-lj.si>
-Description: This is a suite of machine learning algorithms written in C++ with R 
- interface. It contains several machine learning model learning techniques in 
- classification and regression, for example classification and regression trees with
+Description: A suite of machine learning algorithms written in C++ with R 
+ interface contains several learning techniques for classification and regression,
+ Predictive models include e.g., classification and regression trees with
  optional constructive induction and models in the leaves, random forests, kNN, 
  naive Bayes, and locally weighted regression. All predictions obtained with these
  models can be explained and visualized with ExplainPrediction package.  
  The package is especially strong in feature evaluation where it contains several variants of
  Relief algorithm and many impurity based attribute evaluation functions, e.g., Gini, 
- information gain, MDL, and DKM. These methods can be used for example to discretize 
- numeric attributes.
- Its additional feature is OrdEval algorithm and its visualization used for evaluation
+ information gain, MDL, and DKM. These methods can be used for feature selection 
+ or discretization of numeric attributes.
+ The OrdEval algorithm and its visualization is used for evaluation
  of data sets with ordinal features and class, enabling analysis according to the 
  Kano model of customer satisfaction. 
  Several algorithms support parallel multithreaded execution via OpenMP.  

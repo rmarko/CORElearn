@@ -1,4 +1,4 @@
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "general.h"
 #include "utils.h"
@@ -6,6 +6,7 @@
 #include "contain.h"
 #include "rfUtil.h"
 
+using namespace std ;
 
 
 // get bootstrap replicates for random forests

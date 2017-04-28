@@ -7,7 +7,7 @@
 *
 *********************************************************************/
 
-#include <float.h>
+#include <cfloat>
 
 #include "general.h"
 #include "expr.h"
@@ -19,8 +19,7 @@
 #include "estimator.h"
 #include "options.h"
 
-//extern Options *opt ;
-//extern featureTree *gFT ;
+using namespace std ;
 
 expr::expr(expr &Copy)
 {

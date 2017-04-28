@@ -14,13 +14,14 @@
    For regression problems there are RREliefF, MSEofMean, MSEofModel, MAEofMode, etc.
 }
 \usage{
- discretize(formula, data, method=c("greedy", "equalFrequency", "equalWidth"), estimator,
-            discretizationLookahead=3, discretizationSample=0, maxBins=0,  
-            equalDiscBins=4, ...)
+ discretize(formula, data, method=c("greedy", "equalFrequency", "equalWidth"), 
+            estimator, discretizationLookahead=3, discretizationSample=0, 
+            maxBins=0, equalDiscBins=4, ...)
  
  applyDiscretization(data, boundsList, noDecimalsInValueName=2)
     
- intervalMidPoint(data, boundsList, midPointMethod=c("equalFrequency", "equalWidth")) 
+ intervalMidPoint(data, boundsList, 
+                  midPointMethod=c("equalFrequency", "equalWidth")) 
          
 }
 \arguments{
@@ -89,15 +90,17 @@
   }
 \examples{
 # use iris data
-
 # run method using estimator ReliefF with exponential rank distance  
-discBounds <- discretize(Species ~ ., iris, method="greedy", estimator="ReliefFexpRank")
+discBounds <- discretize(Species ~ ., iris, method="greedy", 
+                         estimator="ReliefFexpRank")
 print(discBounds)
 discreteIris <- applyDiscretization(iris, discBounds)
-prototypePoints <- intervalMidPoint(iris, discBounds, midPointMethod="equalFrequency")
+prototypePoints <- intervalMidPoint(iris, discBounds, 
+                                    midPointMethod="equalFrequency")
 
 regData <- regDataGen(200)
-discretize(response ~ ., regData, method="greedy", estimator="RReliefFequalK", maxBins=2)
+discretize(response ~ ., regData, method="greedy", estimator="RReliefFequalK", 
+           maxBins=2)
  
 # print all available estimators
 #infoCore(what="attrEval")

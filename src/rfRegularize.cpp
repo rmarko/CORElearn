@@ -1,5 +1,4 @@
-#include <stdio.h>
-#include <float.h>
+#include <cfloat>
 
 #include "general.h"
 #include "error.h"
@@ -12,9 +11,7 @@
 #include "rfUtil.h"
 #include "options.h"
 
-//extern Options *opt ;
-
-
+using namespace std ;
 
 
 //************************************************************

@@ -12,11 +12,11 @@
 *               - some maths
 *
 *********************************************************************/
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include <limits.h>
-#include <float.h>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
+#include <climits>
+#include <cfloat>
 
 
 #include "general.h"
@@ -43,6 +43,7 @@ int (*fcmp3) (sort3Rec &X, sort3Rec& Y) ;
 
 marray<sortRec> *heap ;
 
+using namespace std ;
 
 
 //************************************************************
@@ -412,14 +413,14 @@ double mdlIntEncode(long int number)
    if (number==0)
      return 1.0 ;
 
-   double code = double(1.0) + log2(double(2.865064)) ;
+   double code = double(1.0) + mlog2(double(2.865064)) ;
 
-   double logarithm = log2((double)number) ;
+   double logarithm = mlog2((double)number) ;
 
    while (logarithm > 0)
    {
       code += logarithm ;
-      logarithm = log2((double)logarithm) ;
+      logarithm = mlog2((double)logarithm) ;
    }
 
    return code ;
@@ -434,14 +435,14 @@ double mdlIntEncode(double number)
    if (number==0.0)
      return 1.0 ;
 
-   double code = double(1.0) + log2(double(2.865064)) ;
+   double code = double(1.0) + mlog2(double(2.865064)) ;
 
-   double logarithm = log2(number) ;
+   double logarithm = mlog2(number) ;
 
    while (logarithm > 0)
    {
       code += logarithm ;
-      logarithm = log2(logarithm) ;
+      logarithm = mlog2(logarithm) ;
    }
 
    return code ;
@@ -1166,9 +1167,9 @@ void modelEval(int SetSize, marray<int> &trueClass,
 		pClObtain = probDist[i][trueClass[i]];
 		pClObtain = Mmax(epsilon, Mmin(pClObtain, 1-epsilon)) ; // computational correction, if neccessary
 		if (pClObtain >= pClPrior) {
-			infi += ( -log2(pClPrior) + log2(pClObtain) );
+			infi += ( -mlog2(pClPrior) + mlog2(pClObtain) );
 		} else {
-			infi -= ( -log2(1.0 - pClPrior) + log2(1.0 - pClObtain) );
+			infi -= ( -mlog2(1.0 - pClPrior) + mlog2(1.0 - pClObtain) );
 		}
 
 		// AUC, M measure, brier

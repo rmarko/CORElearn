@@ -1,5 +1,5 @@
-#include <stdlib.h>
-#include <float.h>
+#include <cstdlib>
+#include <cfloat>
 
 #include "general.h"
 #include "error.h"
@@ -8,6 +8,7 @@
 #include "utils.h"
 #include "binpart.h"
 
+using namespace std ;
 
 
 // ***************************************************************************

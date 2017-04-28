@@ -1,6 +1,5 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <float.h>
+#include <cstdlib>
+#include <cfloat>
 
 #include "general.h"
 #include "error.h"
@@ -17,7 +16,11 @@
 //#define CIRCULAR_DIST
 //#define CIRCULAR_MOD 20
 
+using namespace std ;
 
+#if !defined(R_PORT)
+#define Rprintf printf
+#endif
 // ***************************************************************************
 //
 //                         constructor
@@ -336,12 +339,12 @@ estimationReg::estimationReg(regressionTree *fTreeParent, marray<int> &inDTrain,
 	   delete [] covM[i] ;
 
    // print out the matrix
-   for (i=1 ; i < noNumeric; i++)
-   {
-     for (j=1 ; j < noNumeric; j++)
-       printf("%8.5f ",covMI(i,j)) ;
-     printf("\n") ;
-   }
+//   for (i=1 ; i < noNumeric; i++)
+//   {
+//     for (j=1 ; j < noNumeric; j++)
+//       printf("%8.5f ",covMI(i,j)) ;
+//     printf("\n") ;
+//   }
 
 
 #endif
@@ -514,7 +517,7 @@ void estimationReg::CReliefDensity(int contAttrFrom, int contAttrTo,
                 (contDiffA[idx] - contDiffCdiffA[idx]) / (NoIterations - diffC)  ;
       contDiffA[idx]  /= double(NoIterations) ; // if used in gini gain
 	  #if defined(EXPLORE)
-        printf("%10.5f %10.5f %10.5f %10d\n",diffC,contDiffCdiffA[idx],contDiffA[idx]*NoIterations,NoIterations) ;
+        Rprintf("%10.5f %10.5f %10.5f %10d\n",diffC,contDiffCdiffA[idx],contDiffA[idx]*NoIterations,NoIterations) ;
 	  #endif
    }
    for (k=discAttrFrom ; k < discAttrTo ; k++)
@@ -524,7 +527,7 @@ void estimationReg::CReliefDensity(int contAttrFrom, int contAttrTo,
                 (discDiffA[idx] - discDiffCdiffA[idx]) / (NoIterations - diffC)   ;
       discDiffA[idx]  /= double(NoIterations) ; // if used in gini gain
 	  #if defined(EXPLORE)
-        printf("%10.5f %10.5f %10.5f %10d\n",diffC,discDiffCdiffA[idx],discDiffA[idx]*NoIterations,NoIterations) ;
+        Rprintf("%10.5f %10.5f %10.5f %10d\n",diffC,discDiffCdiffA[idx],discDiffA[idx]*NoIterations,NoIterations) ;
 	  #endif
    }
    diffC /=  double(NoIterations) ; // if used in gini gain

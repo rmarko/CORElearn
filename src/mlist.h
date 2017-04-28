@@ -1,7 +1,7 @@
 #if !defined(MLIST_H)
 #define MLIST_H
 
-#include <stdlib.h>
+#include <cstdlib>
 #include "general.h"
 #include "error.h"
 

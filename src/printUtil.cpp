@@ -1,5 +1,5 @@
-#include <stdio.h>
-#include <float.h>
+#include <cfloat>
+#include <cstdio>
 
 #include "general.h"
 #include "error.h"
@@ -8,6 +8,8 @@
 
 extern estDsc estName[] ;
 extern estDsc estNameReg[] ;
+
+using namespace std ;
 
 
 //************************************************************

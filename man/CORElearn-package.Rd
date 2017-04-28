@@ -50,7 +50,8 @@ cost-sensitive ReliefF, etc), gain ratio, gini-index, MDL, DKM, information gain
 }
 Some of the internal structures of the C++ part are described in \code{\link{CORElearn-internal}}.
 
-For an automatically generated list of functions use \code{help(package=CORElearn)} or \code{library(help=CORElearn)}.
+For an automatically generated list of functions use \code{help(package=CORElearn)} or 
+\code{library(help=CORElearn)}.
 
 For certain platforms multithreaded execution is not supported, since current set of compilers 
 at CRAN do not support OpenMP, but it is possible to recompile the package with appropriate tools and compilers
@@ -113,14 +114,16 @@ trainIdxs <- sample(x=nrow(iris), size=0.7*nrow(iris), replace=FALSE)
 testIdxs <- c(1:nrow(iris))[-trainIdxs]
 
 # build random forests model with certain parameters
-# setting maxThreads to 0 or more than 1 forces utilization of several processor cores 
+# setting maxThreads to 0 or more than 1 forces 
+# utilization of several processor cores 
 modelRF <- CoreModel(Species ~ ., iris[trainIdxs,], model="rf",
               selectionEstimator="MDL",minNodeWeightRF=5,
               rfNoTrees=100, maxThreads=1)
 
 print(modelRF) # simple visualization, test also others with function plot
 
-pred <- predict(modelRF, iris[testIdxs,], type="both") # prediction on testing set
+# prediction on testing set
+pred <- predict(modelRF, iris[testIdxs,], type="both") 
 
 # compute statistics
 mEval <- modelEval(modelRF, iris[["Species"]][testIdxs], pred$class, pred$prob)
@@ -129,11 +132,13 @@ print(mEval)
 \dontrun{
 # explain predictions on the level of model and individual instances
 require(ExplainPrediction)
-explainVis(modelRF, iris[trainIdxs,], iris[testIdxs,], method="EXPLAIN",visLevel="model",
-           problemName="iris", fileType="none", classValue=1, displayColor="color") 
+explainVis(modelRF, iris[trainIdxs,], iris[testIdxs,], method="EXPLAIN",
+           visLevel="model", problemName="iris", fileType="none", 
+           classValue=1, displayColor="color") 
 # turn on the history in visualization window to see all instances
-explainVis(modelRF, iris[trainIdxs,], iris[testIdxs,], method="EXPLAIN",visLevel="instance",
-           problemName="iris", fileType="none", classValue=1, displayColor="color") 
+explainVis(modelRF, iris[trainIdxs,], iris[testIdxs,], method="EXPLAIN",
+           visLevel="instance", problemName="iris", fileType="none", 
+           classValue=1, displayColor="color") 
 }
 # Clean up, otherwise the memory is still taken
 destroyModels(modelRF) # clean up

@@ -1,7 +1,7 @@
 #if !defined(EXPRREG_H)
 #define EXPRREG_H
 
-#include <float.h>
+#include <cfloat>
 #include "general.h"
 #include "contain.h"
 

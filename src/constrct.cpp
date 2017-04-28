@@ -5,9 +5,9 @@
 // *   Description:      deals with constructs 
 // *
 // *********************************************************************
-#include <float.h>
-#include <string.h>
-#include <math.h>
+#include <cfloat>
+#include <cstring>
+#include <cmath>
 
 #include "general.h"
 #include "estimator.h"
@@ -896,18 +896,18 @@ double construct::mdlAux(constructNode *Node)
          return mdlAux(Node->left) + mdlAux(Node->right) ;
 
       case cnCONTattribute: // summing and multiplying
-         return log2((double)(gFT->noNumeric-1)) ;
+         return mlog2((double)(gFT->noNumeric-1)) ;
       
       case cnCONTattrValue:
       {
         double intValue = gFT->valueInterval[Node->attrIdx]/gFT->opt->mdlErrorPrecision ;
         if (intValue < 1.0)
           intValue = 1.0 ;
-        return  log2((double)gFT->noAttr) + 2*log2((double)intValue) ;
+        return  mlog2((double)gFT->noAttr) + 2*mlog2((double)intValue) ;
       }
       case  cnDISCattrValue:
-        return log2((double)gFT->noAttr) +
-               log2((double)gFT->AttrDesc[gFT->DiscIdx[Node->attrIdx]].NoValues) ;
+        return mlog2((double)gFT->noAttr) +
+               mlog2((double)gFT->AttrDesc[gFT->DiscIdx[Node->attrIdx]].NoValues) ;
 
       case cnDISCattribute:
       default: 
@@ -927,11 +927,11 @@ double construct::mdlAux(constructNode *Node)
 // *********************************************************************
 double construct::mdlConstructCode() 
 {
-   double code = log2((double)no1bits(gFT->opt->constructionMode)) ;
+   double code = mlog2((double)no1bits(gFT->opt->constructionMode)) ;
    switch (compositionType)
    {
      case cSINGLEattribute:
-          code += log2((double)gFT->noAttr) ;
+          code += mlog2((double)gFT->noAttr) ;
           if (countType == aDISCRETE)
           {
 //#if defined(DEBUG)
@@ -951,14 +951,14 @@ double construct::mdlConstructCode()
             double intValue = gFT->valueInterval[root->attrIdx]/gFT->opt->mdlModelPrecision ;
             if (intValue < 1.0)
               intValue = 1.0 ;
-            code += log2(intValue) ;
+            code += mlog2(intValue) ;
           }
           break ;       
      case cCONJUNCTION:
      case cSUM:
      case cPRODUCT:
      case cXofN:
-         code += log2((double)degreesOfFreedom()) ;
+         code += mlog2((double)degreesOfFreedom()) ;
          code += mdlAux() ;       
          break ;
      default:

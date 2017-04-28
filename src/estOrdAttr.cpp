@@ -1,7 +1,6 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <float.h>
-#include <math.h>
+#include <cstdlib>
+#include <cfloat>
+#include <cmath>
 
 #include "general.h"
 #include "error.h"
@@ -10,6 +9,7 @@
 #include "utils.h"
 #include "options.h"
 
+using namespace std ;
 
 // ***************************************************************************
 //

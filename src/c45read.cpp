@@ -1,7 +1,7 @@
-#include <stdio.h>    // read and write functions
-#include <string.h>    // dealing with attribute and value names
-#include <stdlib.h>
-#include <float.h>
+#include <cstdio>    // read and write functions
+#include <cstring>    // dealing with attribute and value names
+#include <cstdlib>
+#include <cfloat>
 
 #include "general.h"
 #include "utils.h"
@@ -11,6 +11,8 @@
 #include "mstring.h"
 #include "mlist.h"
 #include "c45read.h"
+
+using namespace std ;
 
 char nameSeparators[] = "," ;
 char attrSeparators[] = ":" ;

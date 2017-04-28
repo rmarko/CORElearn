@@ -8,10 +8,10 @@
 *
 *********************************************************************/
 
-#include <stdio.h>    // read and write functions
-#include <string.h>    // dealing with attribute and value names
-#include <stdlib.h>
-#include <float.h>
+#include <cstdio>    // read and write functions
+#include <cstring>    // dealing with attribute and value names
+#include <cstdlib>
+#include <cfloat>
 
 #include "general.h"
 #include "utils.h"
@@ -24,6 +24,8 @@ extern int NoEstimators ;
 extern int NoEstimatorsReg ;
 extern estDsc estName[] ;
 extern estDsc estNameReg[] ;
+
+using namespace std ;
 
 /* Implementation of testing NA double values */
 double NAcont = genNAcont() ; // do not change without need
@@ -140,7 +142,7 @@ int dataStore::readProblem(booleanT isTrain, booleanT verbose)
 		// native format
 
 		if (verbose) {
-			printf("\nReading description, ") ;
+			Rprintf("\nReading description, ") ;
 			fflush(stdout) ;
 		}
 		if (readDescription())
@@ -148,12 +150,12 @@ int dataStore::readProblem(booleanT isTrain, booleanT verbose)
 			if (!isRegression)
 				readCosts() ;
 			if (verbose) {
-				printf("data, ") ;
+				Rprintf("data, ") ;
 				fflush(stdout) ;
 			}
 			if (readData(isTrain)) {
 				if (verbose) {
-					printf("done.\n") ;
+					Rprintf("done.\n") ;
 					fflush(stdout) ;
 				}
 			}
@@ -172,7 +174,7 @@ int dataStore::readProblem(booleanT isTrain, booleanT verbose)
 		if ((from=fopen(FileName,"r"))!=NULL) {
 			// C4.5 format
 			if (verbose) {
-				printf("\nReading C4.5 names,") ;
+				Rprintf("\nReading C4.5 names,") ;
 				fflush(stdout) ;
 			}
 			c45read c45r ;
@@ -182,7 +184,7 @@ int dataStore::readProblem(booleanT isTrain, booleanT verbose)
 			if ((from=fopen(FileName,"r"))!=NULL)
 			{
 				if (verbose) {
-					printf(" data,") ;
+					Rprintf(" data,") ;
 					fflush(stdout) ;
 				}
 				c45r.readC45data(from, opt->NAstring.getConstValue());
@@ -194,7 +196,7 @@ int dataStore::readProblem(booleanT isTrain, booleanT verbose)
 
 			// convert to internal representation
 			if (verbose) {
-				printf(" converting, ") ;
+				Rprintf(" converting, ") ;
 				fflush(stdout) ;
 			}
 			if (c45names2dsc(c45r)) {
@@ -203,7 +205,7 @@ int dataStore::readProblem(booleanT isTrain, booleanT verbose)
 						 prepareDataSplits() ;
 					 }
 					 if (verbose) {
-						 printf(" done.\n") ;
+						 Rprintf(" done.\n") ;
 						 fflush(stdout) ;
 					 }
 				 }
@@ -216,7 +218,7 @@ int dataStore::readProblem(booleanT isTrain, booleanT verbose)
 				if ((from=fopen(FileName,"r"))!=NULL)
 				{
 					if (verbose) {
-						printf(" C4.5 costs,") ;
+						Rprintf(" C4.5 costs,") ;
 						fflush(stdout) ;
 					}
 					c45r.readC45costs(from, CostMatrix) ;
@@ -898,7 +900,7 @@ int dataStore::readCosts(void)
        return 1;
    }
    else
-       printf("costs, ") ;
+       Rprintf("costs, ") ;
 
    char strBuf[MaxNameLen+1], *token ;
    double costValue ;
