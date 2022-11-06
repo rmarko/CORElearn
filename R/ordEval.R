@@ -72,14 +72,15 @@ oeInst<-function(ord, noAttr, graphTitle = "", normalization=TRUE, instSelection
 }
 
 
-avNormBarObject<-function(oe, ci=c("two.sided","upper","lower","none"), ciDisplay=c("box","color"), 
+avNormBarObject<-function(oe, ciType=c("two.sided","upper","lower","none"), ciDisplay=c("box","color"),
+        ciDecorate = NULL,
         graphTitle = NULL, ylabLeft = "attribute values", ylabRight="number of values" ,
         xlabel="reinforcement", attrIdx=0, equalUpDown=FALSE, colors=c("green","lightgreen","blue","lightblue")) 
 {
-    ci<-match.arg(ci)
+    ciType<-match.arg(ciType)
     ciDisplay<-match.arg(ciDisplay)
     
-    if (is.null(colors)) { # vlack and white
+    if (is.null(colors)) { # black and white
         downColor <- gray(0.7)
         downOverColor <- gray(0.9)
         upColor <- gray(0.5)
@@ -127,11 +128,11 @@ avNormBarObject<-function(oe, ci=c("two.sided","upper","lower","none"), ciDispla
                 ylab = ylab, axes = FALSE)
         ## plot title
         if (is.null(graphTitle))
-            titleName <- paste("", sub('_', ' ', oe$attrNames[iA]))
+            titleName <- paste("", gsub('_', ' ', oe$attrNames[iA]))
         else if (graphTitle == "")
             titleName <- ""
         else
-            titleName <-paste(sub('_', ' ', oe$attrNames[iA]),"\neffect on ", graphTitle)
+            titleName <-paste(gsub('_', ' ', oe$attrNames[iA]),"\neffect on ", graphTitle)
         title(main=titleName, sub=subtitleName)
         
         ## bottom x axis
@@ -177,34 +178,42 @@ avNormBarObject<-function(oe, ci=c("two.sided","upper","lower","none"), ciDispla
             } 
             ## box and whiskesrs 
             if (statsDown[["highPercentile"]] > 0) {
-                if (ci=="lower")
+                if (ciType=="lower")
                     statsDown[["highPercentile"]] <- 1
-                if (ci=="upper")
+                if (ciType=="upper")
                     statsDown[["lowPercentile"]] <- 0
                 if (ciDisplay == "box")
-                   boxwhiskers(-statsDown, y+0.50*boxHeight, y+0.70*boxHeight, ci)
-                else if (ci != "none") {
+                   boxwhiskers(-statsDown, y+0.50*boxHeight, y+0.70*boxHeight, ciType)
+                else if (ciType != "none") {
                     # change the color within upper limit of confidence interval 
                     rect(max(-xDown, -statsDown[["highPercentile"]]), y, 0.0, y+0.45*boxHeight, col=downOverColor)                    
-                }                
+                }  
+                if (!is.null(ciDecorate) && abs(statsDown[["highPercentile"]]) < abs(xDown) ) {
+                  segments(-statsDown[["highPercentile"]], y - 0.10,  -statsDown[["highPercentile"]], y + 0.55, lty="dashed")
+                  draw.ellipse(x = -(statsDown[["highPercentile"]]+xDown)/2, y = y+0.225*boxHeight, a = max(0.05, 0.05+(xDown - statsDown[["highPercentile"]])/2), b= 0.05 + 0.225*boxHeight, border=ciDecorate, lwd=2)
+                }
+                
             }
             if (xUp>0) {
                 rect(0.0, y, xUp, y+0.45*boxHeight, col=upColor)
-                #text(xUp/2, y+0.225*boxHeight, labels = format(xUp, digits=2), adj=c(0.5,0.5), cex=chExp, vfont=c("sans serif","plain"))
-            }                
+             }                
             ## box and whiskesrs 
             if (statsUp[["highPercentile"]] > 0){
-                if (ci=="lower")
+                if (ciType=="lower")
                     statsUp[["highPercentile"]]<-1
-                if (ci=="upper")
+                if (ciType=="upper")
                     statsUp[["lowPercentile"]]<-0              
                 if (ciDisplay == "box"){
-                    boxwhiskers(statsUp, y+0.50*boxHeight, y+0.70*boxHeight,ci)
+                    boxwhiskers(statsUp, y+0.50*boxHeight, y+0.70*boxHeight,ciType)
                 }
-                else if (ci != "none"){
+                else if (ciType != "none"){
                     # change the color within upper limit of confidence interval 
                     rect(min(xUp, statsUp[["highPercentile"]]), y, 0.0, y+0.45*boxHeight, col=upOverColor)                    
-                }                
+                }   
+                if (!is.null(ciDecorate) && abs(statsUp[["highPercentile"]]) < abs(xUp) ) {
+                  segments(statsUp[["highPercentile"]], y - 0.10,  statsUp[["highPercentile"]], y + 0.55, lty="dashed")
+                  draw.ellipse(x = (statsUp[["highPercentile"]]+xUp)/2, y = y+0.225*boxHeight, a = max(0.05, 0.05+(xUp - statsUp[["highPercentile"]])/2), b = 0.05 + 0.225*boxHeight, border=ciDecorate, lwd = 2)
+                }
             }
         }
         par(lwd = 1)
@@ -215,9 +224,9 @@ avNormBarObject<-function(oe, ci=c("two.sided","upper","lower","none"), ciDispla
 
 
 
-avSlopeObject<- function(oe, ci=c("two.sided","upper","lower","none"),attrIdx=0, graphTitle=NULL, xlabel = "attribute values", colors=c("green","lightgreen","blue","lightblue"))
+avSlopeObject<- function(oe, ciType=c("two.sided","upper","lower","none"),attrIdx=0, graphTitle=NULL, xlabel = "attribute values", colors=c("green","lightgreen","blue","lightblue"))
 {
-    ci<-match.arg(ci)
+    ciType<-match.arg(ciType)
     
     noAttr <- oe$noAttr
     ordVal <- oe$ordVal
@@ -284,11 +293,11 @@ avSlopeObject<- function(oe, ci=c("two.sided","upper","lower","none"),attrIdx=0,
         plot(x, y, xlim = c(1, ordVal), ylim = yLimit, xlab = "", ylab = "cumulative reinforcement", type = "n", axes = FALSE)
         
         if (is.null(graphTitle))
-            titleName <- paste("", sub('_', ' ', oe$attrNames[iA]))
+            titleName <- paste("", gsub('_', ' ', oe$attrNames[iA]))
         else if (graphTitle == "")
             titleName <- ""
         else
-            titleName <-paste(sub('_', ' ', oe$attrNames[iA]),"\neffect on ", graphTitle)
+            titleName <-paste(gsub('_', ' ', oe$attrNames[iA]),"\neffect on ", graphTitle)
         title(main=titleName)
 
         text((ordVal+1)/2.0, yLimit[1]-0.1, label = xlabel[iA], adj=c(0.5,1),xpd=TRUE)
@@ -302,21 +311,21 @@ avSlopeObject<- function(oe, ci=c("two.sided","upper","lower","none"),attrIdx=0,
         lines(xD, yD[iA,], type = "o", pch = 15, col = downColor)
         for(i in 1:(ordVal - 1)) {
 
-            if (ci=="lower")
+            if (ciType=="lower")
               polygon(c(xU[i], xU[i+1],xU[i+1]), c(yU[iA,i], yUlow[iA,i+1],yU[iA,i]), col = ciColor, border=NA)
-            if (ci=="upper")
+            if (ciType=="upper")
               polygon(c(xU[i], xU[i+1],xU[i+1]), c(yU[iA,i], yUhigh[iA,i+1],yU[iA,i]), col = ciColor, border=NA)
-            if (ci=="two.sided")
+            if (ciType=="two.sided")
                 polygon(c(xU[i], xU[i+1],xU[i+1]), c(yU[iA,i], yUhigh[iA,i+1],yUlow[iA,i+1]), col = ciColor, border=NA)
 
             arrows(xU[i], yU[iA,i], xU[i+1], yU[iA,i+1], col = upColor, angle=9, length=0.12)
                        
             
-            if (ci=="lower")
+            if (ciType=="lower")
                 polygon(c(xD[i+1], xD[i],xD[i]), c(yD[iA,i+1], yD[iA,i+1],yDlow[iA,i]), col = ciColor, border=NA)
-            if (ci=="upper")
+            if (ciType=="upper")
                polygon(c(xD[i+1], xD[i],xD[i]), c(yD[iA,i+1], yD[iA,i+1],yDhigh[iA,i]), col = ciColor, border=NA)
-            if (ci=="two.sided")
+            if (ciType=="two.sided")
                polygon(c(xD[i+1], xD[i],xD[i]), c(yD[iA,i+1], yDhigh[iA,i],yDlow[iA,i]), col = ciColor, border=NA)
             
             arrows(xD[i + 1], yD[iA,i+1], xD[i], yD[iA,i], col = downColor, angle=9, length=0.12)
@@ -328,9 +337,9 @@ avSlopeObject<- function(oe, ci=c("two.sided","upper","lower","none"),attrIdx=0,
 
 
 attrNormBarObject<-function(oe, graphTitle = "OrdEval for all attributes", 
-        ci=c("two.sided","upper","lower","none"),ciDisplay=c("box","color"), colors=c("green","lightgreen","blue","lightblue"))
+        ciType=c("two.sided","upper","lower","none"),ciDisplay=c("box","color"), ciDecorate=NULL, colors=c("green","lightgreen","blue","lightblue"))
 {
-    ci = match.arg(ci)
+    ciType = match.arg(ciType)
     ciDisplay=match.arg(ciDisplay)
     noAttr <- oe$noAttr
     ordVal <- oe$ordVal
@@ -395,17 +404,22 @@ attrNormBarObject<-function(oe, graphTitle = "OrdEval for all attributes",
         ## box and whiskesrs for random down 
         if (oe$rndReinfNegAttr[iA,"highPercentile"] > 0) {
             stats <- oe$rndReinfNegAttr[iA,]
-            if (ci=="lower")
+            if (ciType=="lower")
                 stats[["highPercentile"]]<-1
-            if (ci=="upper")
+            if (ciType=="upper")
                 stats[["lowPercentile"]]<-0
             if (ciDisplay == "box"){                
-              boxwhiskers(stats, y+0.50*boxHeight, y+0.70*boxHeight, ci)
+              boxwhiskers(stats, y+0.50*boxHeight, y+0.70*boxHeight, ciType)
             }
-            else if (ci != "none") {
+            else if (ciType != "none") {
                 # change the color within upper limit of confidence interval 
                 rect(max(xDown, -stats[["highPercentile"]]), y, 0.0, y+0.45*boxHeight, col=downOverColor)                    
-            }                
+            }  
+            if (!is.null(ciDecorate) && abs(stats[["highPercentile"]]) < abs(xDown) ) {
+              segments(-stats[["highPercentile"]], y - 0.10,  -stats[["highPercentile"]], y + 0.55, lty="dashed")
+              draw.ellipse(x = (-stats[["highPercentile"]]+xDown)/2, y = y+0.225*boxHeight, a = max(0.05, 0.05+(-xDown - stats[["highPercentile"]])/2), b= 0.05 + 0.225*boxHeight, border=ciDecorate, lwd=2)
+            }
+            
          }
         if (xUp>0) {
             rect(0.0, y, xUp, y+0.45*boxHeight, col=upColor)
@@ -413,29 +427,33 @@ attrNormBarObject<-function(oe, graphTitle = "OrdEval for all attributes",
         ## box and whiskesrs for random up
         if (oe$rndReinfPosAttr[iA,"highPercentile"] > 0){
             stats <- oe$rndReinfPosAttr[iA,]
-            if (ci=="lower")
+            if (ciType=="lower")
                 stats[["highPercentile"]]<-1
-            if (ci=="upper")
+            if (ciType=="upper")
                 stats[["lowPercentile"]]<-0
             
             if (ciDisplay == "box"){              
-               boxwhiskers(-stats, y+0.50*boxHeight, y+0.70*boxHeight, ci)
+               boxwhiskers(-stats, y+0.50*boxHeight, y+0.70*boxHeight, ciType)
             }
-            else if (ci != "none") {
+            else if (ciType != "none") {
                 # change the color within upper limit of confidence interval 
                 rect(min(xUp, stats[["highPercentile"]]), y, 0.0, y+0.45*boxHeight, col=upOverColor)                    
-            }                
+            }      
+            if (!is.null(ciDecorate) && abs(stats[["highPercentile"]]) < abs(xUp) ) {
+              segments(stats[["highPercentile"]], y - 0.10,  stats[["highPercentile"]], y + 0.55, lty="dashed")
+              draw.ellipse(x = (stats[["highPercentile"]]+xUp)/2, y = y+0.225*boxHeight, a = max(0.05, 0.05+(xUp - stats[["highPercentile"]])/2), b = 0.05 + 0.225*boxHeight, border=ciDecorate, lwd = 2)
+            }
         
         }
       }
       invisible()
 }
 
-boxwhiskers<-function(stats, y1, y2, ci="two.sided")
+boxwhiskers<-function(stats, y1, y2, ciType="two.sided")
 {
     # names(stats) contains: c("median", "Q1", "Q3", "lowPercentile", "highPercentile", "mean", "stdDev", "exp")) 
  
-    if (ci=="none")
+    if (ciType=="none")
         return()
     
     ## quartile box
@@ -445,7 +463,7 @@ boxwhiskers<-function(stats, y1, y2, ci="two.sided")
     ##minimum line and whisker
     midY = (y1+y2)/2.0
     yLen = y2-y1
-     if (ci != "upper") {
+     if (ciType != "upper") {
        segments(stats[["Q1"]], midY, stats[["lowPercentile"]], midY,lty="solid")       
        segments(stats[["lowPercentile"]], y1+0.2*yLen, stats[["lowPercentile"]], y2-0.2*yLen)
    }
@@ -453,14 +471,14 @@ boxwhiskers<-function(stats, y1, y2, ci="two.sided")
         segments(stats[["Q1"]], midY, stats[["lowPercentile"]], midY,lty="solid")  
  
     ##maximum line and whisker    
-    if (ci != "lower") {
+    if (ciType != "lower") {
         segments(stats[["Q3"]], midY, stats[["highPercentile"]], midY, lty="solid")
         segments(stats[["highPercentile"]], y1+0.2*yLen, stats[["highPercentile"]], y2-0.2*yLen) 
     }
     else
         segments(stats[["Q3"]], midY, stats[["highPercentile"]], midY, lty="solid")
     
-        
+       
     #if (length(stats)==8) ## also expeceted is present
     #   points(stats[[8]],midY,pch=20) 
     

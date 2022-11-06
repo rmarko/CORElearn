@@ -4,7 +4,7 @@ versionCore <- function()
 	tmp$libVersion
 }
 
-predict <- function(object, ...) UseMethod("predict", object)
+#predict <- function(object, ...) UseMethod("predict", object)
 #plot <- function(object, ...) UseMethod("plot", object)
 
 destroyModels <-function(model=NULL)
@@ -24,7 +24,62 @@ destroyModels <-function(model=NULL)
 	invisible(NULL) 
 }
 
-CoreModel <- function(formula, data, model=c("rf","rfNear","tree","knn","knnKernel","bayes","regTree"), ..., costMatrix=NULL)
+cvCoreModel <- function(formula, data, model=c("rf","rfNear","tree","knn","knnKernel","bayes","regTree"), costMatrix=NULL,
+		folds=10, stratified=TRUE, returnModel=TRUE, ...) 
+{
+	# check formula or response index or reponse name
+	if (inherits(formula,"formula")) 
+		className <- all.vars(formula)[1]
+	else if (is.numeric(formula)) {
+		if (formula == round(formula)) {# index of response variable
+			classIdx <- formula
+			className <- names(data)[classIdx]
+		}
+		else  stop("The first argument must be a formula or prediction column name or prediction column index.")
+	}
+	else if (is.character(formula)) { # name of response variable
+		classIdx <- match(formula, names(data))
+		if (length(classIdx) != 1 || is.na(classIdx)) 
+			stop("The first argument must be a formula or prediction column name or prediction column index.")
+		className <- names(data[classIdx])
+	}
+	else stop("The first argument must be a formula or prediction column name or prediction column index.")
+	
+	
+	if (stratified)
+		foldIdx <- cvGenStratified(data[,className], k=folds)
+	else
+		foldIdx <- cvGen(nrow(data), k=folds)
+	
+	evalCore<-list()
+	for (j in 1:folds) {
+		dTrain <- data[foldIdx!=j,]
+		dTest  <- data[foldIdx==j,]
+		modelCore <- CoreModel(formula, dTrain, model, costMatrix, ...) 
+			
+		predCore <- predict(modelCore, dTest)
+		evalCore[[j]] <- modelEval(modelCore, correctClass=dTest[[className]],predictedClass=predCore$class, predictedProb=predCore$prob ) 
+		destroyModels(modelCore)
+	}
+	
+	resList <- gatherFromList(evalCore)
+	avgs <- sapply(resList, mean)
+	stds <- sapply(resList, sd)
+	
+	if (returnModel) {
+		modelCore <- CoreModel(formula, data, model, costMatrix, ...) 
+	}
+	else {
+		modelCore <- list()
+	}
+	modelCore$avgs <- avgs
+	modelCore$stds <- stds
+	modelCore$evalList <- resList
+	
+	modelCore
+}
+	
+CoreModel <- function(formula, data, model=c("rf","rfNear","tree","knn","knnKernel","bayes","regTree"), costMatrix=NULL, ...)
 {
 	# check formula or response index or reponse name
 	if (inherits(formula,"formula")) {
@@ -141,7 +196,26 @@ predict.CoreModel <- function(object, newdata, ..., costMatrix=NULL,  type=c("bo
 	noClasses <- model$noClasses;
 	class.lev <- model$class.lev;
 	#terms <- delete.response(model$terms);
-	newFormula <- reformulate(all.vars(model$formula)[-1])
+	allVars <- all.vars(model$formula)
+	if (length(allVars)<=1) { # formula was striped to no variables probably due to equal or missing data 
+		# thereofre predict with default classifier
+		if (model$model == "regTree") {
+			returnList <- rep(object$avgTrainPrediction, nrow(newdata))
+		}
+		else {
+			maxPrior <- nnet::which.is.max(object$priorClassProb)
+			pred <- rep(factor(class.lev[maxPrior],levels=class.lev), nrow(newdata))
+			prob <- matrix(object$priorClassProb, nrow=nrow(newdata), ncol=noClasses,dimnames=list(NULL,class.lev),byrow=TRUE);
+			if (type == "both")
+				returnList <- list(class=pred,probabilities=prob)
+			else if (type=="class")
+				returnList <- pred
+			else if (type == "probability")
+				returnList <- prob
+		}
+		return(returnList)	
+	}
+	newFormula <- reformulate(allVars[-1])
 	#newdata <- as.data.frame(newdata)
 	#dat <- model.frame(model$formula, data=newdata, na.action=na.pass);
 	dat <- model.frame(newFormula, data=newdata, na.action=na.pass);
@@ -214,8 +288,9 @@ plot.CoreModel<-function(x, trainSet, rfGraphType=c("attrEval","outliers","scali
 	# regression or decision tree
 	if (x$model == "regTree" || x$model == "tree"){           
 		rmodel <- getRpartModel(x, trainSet) ;
-		plot(rmodel)  # ,compress=T,branch=0.5);
-		text(rmodel) # , pretty=0);
+		#plot(rmodel)  # ,compress=T,branch=0.5);
+		#text(rmodel) # , pretty=0);
+		rpart.plot(rmodel,roundint=FALSE,...)
 	}
 	else if (x$model == "rf" || x$model == "rfNear"){
 		if (rfGraphType == "attrEval") {
@@ -942,34 +1017,46 @@ calibrate <- function(correctClass, predictedProb, class1=1, method = c("isoReg"
 			interval = double(noInst),
 			calProb = double(noInst),
 			NAOK=TRUE)
+	
 	if (assumeProbabilities == TRUE)
 		tmp$interval[tmp$noIntervals] <- 1 # set sentinel for probabilities
+	else tmp$interval[tmp$noIntervals] <- Inf
 	list(interval = tmp$interval[1:tmp$noIntervals], calProb = tmp$calProb[1:tmp$noIntervals])
 }
 
+
 applyCalibration <- function(predictedProb, calibration) {
-	if (is.null(calibration))
-		return(predictedProb)
-	calIntervals <- apply( outer(predictedProb, calibration$interval, ">"), 1, sum) 
-	
-	calProbs  <- calibration$calProb[calIntervals+1]
-	return(calProbs)
+  if (is.null(calibration))
+    return(predictedProb)
+  
+  calIntervals <- findInterval(predictedProb, calibration$interval) 
+  
+  calProbs  <- calibration$calProb[calIntervals+1]
+  return(calProbs)
 }
+
+
 
 applyDiscretization <- function(data, boundsList, noDecimalsInValueName=2) {
 	if (is.null(boundsList))
 		return(data)
 	
 	for (i in 1:length(boundsList)) {
+		noDecimals  <- noDecimalsInValueName 
 		attrName <- names(boundsList)[i]
-		discValues <- apply( outer(data[,attrName], boundsList[[i]], ">"), 1, sum) 
-		data[,attrName] <- factor(discValues, levels=0:length(boundsList[[i]]))
-		repeat {
-			levels(data[,attrName]) <- intervalNames(boundsList[[i]], noDecimalsInValueName)
-			if (length(unique(levels(data[,attrName])))==length(boundsList[[i]])+1)
-				break
-			else
-				noDecimalsInValueName <- noDecimalsInValueName +1	
+		if (length(boundsList[[i]]) == 1 && is.na(boundsList[[i]])) {
+			data[,attrName] <- factor(NA)
+		}
+		else { 
+			discValues <- apply( outer(data[,attrName], boundsList[[i]], ">"), 1, sum) 
+			data[,attrName] <- factor(discValues, levels=0:length(boundsList[[i]]))
+			repeat {
+				levels(data[,attrName]) <- intervalNames(boundsList[[i]], noDecimals)
+				if (length(unique(levels(data[,attrName])))==length(boundsList[[i]])+1)
+					break
+				else
+					noDecimals <- noDecimals +1	
+			}
 		}
 	}
 	data
@@ -1056,13 +1143,15 @@ discretize <- function(formula, data, method=c("greedy", "equalFrequency", "equa
 		warning("Possibly this is an error caused by regression formula and classification attribute estimator or vice versa.")
 	}
 	
-	aux <- prepare.Data(dat,formulaExpanded,dependent=TRUE,numericAsOrdered=FALSE,orderedAsNumeric=FALSE, skipNAcolumn=TRUE,skipEqualColumn=FALSE);
+	aux <- prepare.Data(dat,formulaExpanded,dependent=TRUE,numericAsOrdered=FALSE,orderedAsNumeric=FALSE, skipNAcolumn=TRUE,skipEqualColumn=TRUE);
 	discnumvalues <- aux$discnumvalues;
 	discdata <- aux$discdata;
 	discmap <- aux$discmap;
 	numdata <- aux$numdata;
 	nummap <- aux$nummap;
 	skipmap<-aux$skipmap
+	if (length(skipmap) > 0)
+		warning("The discretization for the following attributes was not computed due to inadequate data:", paste(names(dat)[aux$skipmap],collapse=", "))
 	discAttrNames <- dimnames(discdata)[[2]]
 	discValCompressed <- aux$disccharvalues
 	discValues <- aux$discValues
@@ -1120,6 +1209,13 @@ discretize <- function(formula, data, method=c("greedy", "equalFrequency", "equa
 			outBounds[[i]] <- NA
 	}
 	names(outBounds) <- numAttrNames
+	
+	if (length(skipmap) > 0) {
+		for (i in 1:length(skipmap))
+		   outBounds[[length(outBounds)+1]] <- NA
+	   
+		names(outBounds)[(length(outBounds)-length(skipmap)+1):length(outBounds)] <- names(dat)[aux$skipmap]
+	}
 	
 	if (isRegression)
 		outBounds[[1]] <- NULL

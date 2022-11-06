@@ -396,7 +396,7 @@ plotRFStats <- function(point, cluster=FALSE, plotLine=FALSE,
         axis(2);
         axis(1, at=1:noVar, labels=myAxes);
     }
-    if(cluster!=FALSE && length(cluster) > 0)
+    if(length(cluster) > 1 )
     {
         tmpCluster <- cluster;
         clusterLevelNames <- list();

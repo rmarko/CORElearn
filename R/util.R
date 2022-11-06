@@ -654,3 +654,45 @@ reliabilityPlot<-function(probScore, trueProb, titleText="", boxing="equipotent"
 	subText = ""
 	title(main=titleText, sub=subText)
 }
+
+
+#generate k-fold cross validation of n instances
+cvGen<-function(n, k) {
+	v <- 1:k
+	vec <- array(1:k,dim=n)
+	sample(vec, size=n)
+}
+
+# generate stratified k-fold cross validation partition based on classes in classVal
+cvGenStratified<-function(classVal,k) {
+	classVal<-factor(classVal)
+	levs = factor(levels(classVal), levels=levels(classVal))
+	classFreq <- table(classVal)
+	noClasses <- length(levs)
+	n <- length(classVal)
+	srt <- order(classVal)
+	vec <- array(1:k,dim=n)
+	cv <- array(0,dim=n)
+	cv[srt]<-vec
+	for (i in 1:noClasses) 
+		cv[classVal==levs[i]] <- sample(cv[classVal==levs[i]], size=classFreq[i], replace=F)
+	cv
+}
+
+# collect instances with the same position in different sublists of lst
+gatherFromList<-function(lst){
+	m <-list()
+	
+	for (j in 1:length(lst[[1]])) {
+		m[[j]]<-vector(mode="numeric",length=length(lst))
+		names(m[[j]]) <- names(lst)
+	}
+	names(m)<-names(lst[[1]])
+	for (i in 1:length(lst)){
+		for (j in 1:length(lst[[i]])){
+			if (is.null(dim(lst[[i]][[j]])))
+				m[[j]][i] <- lst[[i]][[j]]
+		}
+	}  
+	m
+}
