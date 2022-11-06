@@ -47,7 +47,7 @@ char* regressionTree::printRegTree(int &featureNo,int &leavesNo,
 			outTree.append(lTreeStr) ;
 			delete [] lTreeStr ;
 			char *buf = new char[place + 20] ;
-			sprintf(buf,"%*sf%d\n",place," ",fNo) ;
+			snprintf(buf, place + 20, "%*sf%d\n",place," ",fNo) ;
 			outTree.append(buf) ;
 			delete [] buf ;
 			featureNode[fNo] = branch ;
@@ -62,7 +62,7 @@ char* regressionTree::printRegTree(int &featureNo,int &leavesNo,
 		else
 		{
 			char *buf = new char[place + 20] ;
-			sprintf(buf, "%*sl%d\n", place, " ", leavesNo) ;
+			snprintf(buf, place + 20, "%*sl%d\n", place, " ", leavesNo) ;
 			modelNode[leavesNo] = branch ;
 			leavesNo++ ;
 			return buf ;
@@ -92,7 +92,7 @@ char* regressionTree::printTreeStr(void) {
 	for (i=0; i < featureNo ; i++)
 	{
 		Feature2Str(featureNode[i], buf);
-		sprintf(bufLine, "f%d: %s\n", i, buf) ;
+		snprintf(bufLine, MaxFeatureStrLen+30, "f%d: %s\n", i, buf) ;
 		fStr.append(bufLine) ;
 	}
 	fTreeStr.append(fStr) ;
@@ -103,7 +103,7 @@ char* regressionTree::printTreeStr(void) {
 	for (i=0 ; i<leavesNo ; i++)
 	{
 		modelDescription = modelNode[i]->Model.descriptionString() ;
-		sprintf(bufLine,"l%-3d: %9.2f %9.2f %9.2f %9.2f %9.2f  %s\n",
+		snprintf(bufLine, MaxFeatureStrLen+30, "l%-3d: %9.2f %9.2f %9.2f %9.2f %9.2f  %s\n",
 				i, modelNode[i]->weight, sqrt(modelNode[i]->MSE), modelNode[i]->MAE,
 				modelNode[i]->averageClassValue, modelNode[i]->stdDevClass,
 				modelDescription ) ;
@@ -129,7 +129,7 @@ char* regressionTree::printTreeDot(void) {
 
 	char buf[MaxFeatureStrLen], dotBuf[MaxFeatureStrLen+30] ;
 
-	sprintf(dotBuf, "digraph \"dotRegressionTree\" {\n") ;
+	snprintf(dotBuf, MaxFeatureStrLen+30, "digraph \"dotRegressionTree\" {\n") ;
 	mstring dotTree(dotBuf) ;
 	char *treeStr = tree2dot(root, featureNo, leavesNo, featureNode, modelNode) ;
 	dotTree.append(treeStr) ;
@@ -140,7 +140,7 @@ char* regressionTree::printTreeDot(void) {
 	for (i=0; i<featureNo ; i++)
 	{
 		Feature2Str(featureNode[i], buf);
-		sprintf(dotBuf, "\tf%d [label = \"%s\"]\n", i, buf) ;
+		snprintf(dotBuf, MaxFeatureStrLen+30, "\tf%d [label = \"%s\"]\n", i, buf) ;
 		fStr.append(dotBuf) ;
 	}
 	dotTree.append(fStr) ;
@@ -150,7 +150,7 @@ char* regressionTree::printTreeDot(void) {
 	for (i=0 ; i<leavesNo ; i++)
 	{
 		modelDescription = modelNode[i]->Model.descriptionString() ;
-		sprintf(dotBuf, "\tl%d [shape = box, label = \"%s\"]\n", i, modelDescription) ;
+		snprintf(dotBuf, MaxFeatureStrLen+30, "\tl%d [shape = box, label = \"%s\"]\n", i, modelDescription) ;
 		modelStr.append(dotBuf) ;
 		delete [] modelDescription ;
 	}
@@ -242,9 +242,9 @@ char* regressionTree::tree2dot(binnodeReg *branch, int &featureNo, int &leavesNo
 			char *buf = new char[MaxLine] ;
 
 			if (branch->left->left) // Is the left node a leaf?
-				sprintf(buf, "\tf%d -> f%d [label = \"yes\"]\n", fNo, featureNo) ;
+				snprintf(buf, MaxLine, "\tf%d -> f%d [label = \"yes\"]\n", fNo, featureNo) ;
 			else
-				sprintf(buf, "\tf%d -> l%d [label = \"yes\"]\n", fNo, leavesNo) ;
+				snprintf(buf, MaxLine, "\tf%d -> l%d [label = \"yes\"]\n", fNo, leavesNo) ;
 
 			mstring treeStr(buf) ;
 			char *leftStr = tree2dot(branch->left, featureNo, leavesNo, featureNode, modelNode);
@@ -252,9 +252,9 @@ char* regressionTree::tree2dot(binnodeReg *branch, int &featureNo, int &leavesNo
 			delete [] leftStr ;
 
 			if (branch->right->left) // is right one the leaf
-				sprintf(buf, "\tf%d -> f%d [label = \"no\"]\n", fNo, featureNo) ;
+				snprintf(buf, MaxLine, "\tf%d -> f%d [label = \"no\"]\n", fNo, featureNo) ;
 			else
-				sprintf(buf, "\tf%d -> l%d [label = \"no\"]\n", fNo, leavesNo) ;
+				snprintf(buf, MaxLine, "\tf%d -> l%d [label = \"no\"]\n", fNo, leavesNo) ;
 
 			treeStr.append(buf) ;
 			delete [] buf ;

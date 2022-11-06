@@ -281,7 +281,7 @@ void printAVestRnd(FILE *to, mmatrix<marray<double> > &reinfPosRnd,
   fprintf(to, "%17s", "AttributeValue") ;
   for (m=0 ; m < noMethods ; ++m){
 	  for (s=0 ; s < noOEstats ; ++s) {
-		  sprintf(buf,"%s%s",methods[m],stats[s]) ;
+		  snprintf(buf, MaxNameLen, "%s%s",methods[m],stats[s]) ;
 		  fprintf(to, ", %17s",buf) ; // 17 is length of the longest name
 	  }
   }
@@ -336,7 +336,7 @@ void printOrdEvalInstRnd(FILE *to, int instance, marray<marray<double> > &reinfP
 	fprintf(to, "%17s", "AttributeValue") ;
 	for (m=0 ; m < noMethods ; ++m){
 		for (s=0 ; s < noOEstats ; ++s) {
-			sprintf(buf,"%s%s", methods[m], stats[s]) ;
+			snprintf(buf, MaxNameLen, "%s%s", methods[m], stats[s]) ;
 			fprintf(to, ", %17s", buf) ; // 17 is length of the longest name
 		}
 	}
@@ -388,7 +388,7 @@ void printOrdClEstRnd(FILE *to, mmatrix<marray<double> > &reinfPosRnd,
   fprintf(to, "%17s", "AttributeValue") ;
   for (m=0 ; m < noMethods ; ++m){
 	  for (s=0 ; s < noOEstats ; ++s) {
-		  sprintf(buf,"%s%s",methods[m],stats[s]) ;
+		  snprintf(buf, MaxNameLen, "%s%s",methods[m],stats[s]) ;
 		  fprintf(to, ", %17s",buf) ; // 17 is length of the longest name
 	  }
   }

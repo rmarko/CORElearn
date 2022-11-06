@@ -65,7 +65,7 @@ char VersionString[]="CORElearn, "
 #else
 " standalone"
 #endif
-" version 1.50.3, built on " __DATE__ " at " __TIME__
+" version 1.56.0, built on " __DATE__ " at " __TIME__
 #if defined(_OPENMP)
 " with OpenMP support"
 #endif
@@ -353,7 +353,7 @@ void singleEstimation(featureTree* const Tree){
 
    FILE *fout ;
    char path[MaxPath] ;
-   sprintf(path,"%s%s.%02dest", Tree->opt->resultsDirectory.getConstValue(), Tree->opt->domainName.getConstValue(), Tree->opt->splitIdx) ;
+   snprintf(path, MaxPath, "%s%s.%02dest", Tree->opt->resultsDirectory.getConstValue(), Tree->opt->domainName.getConstValue(), Tree->opt->splitIdx) ;
    if ((fout = fopen(path,"w"))==NULL)
    {
       merror("singleEstimation: cannot open results file: ", path)  ;
@@ -441,7 +441,7 @@ void singleEstimationReg(featureTree* const FTree)
    // write results to the file
    FILE *fout ;
    char path[MaxPath] ;
-   sprintf(path,"%s%s.%02de",Tree->opt->resultsDirectory.getConstValue(), Tree->opt->domainName.getConstValue(), Tree->opt->splitIdx) ;
+   snprintf(path, MaxPath, "%s%s.%02de",Tree->opt->resultsDirectory.getConstValue(), Tree->opt->domainName.getConstValue(), Tree->opt->splitIdx) ;
    if ((fout = fopen(path,"w"))==NULL)
    {
       merror("singleEstimationReg: cannot open results file: ", path)  ;
@@ -486,7 +486,7 @@ void allSplitsEstimation(featureTree* const Tree)
    estimation *pEstimator ;
    FILE *fout ;
    char path[MaxPath] ;
-   sprintf(path,"%s%s.est", Tree->opt->resultsDirectory.getConstValue(), Tree->opt->domainName.getConstValue()) ;
+   snprintf(path, MaxPath, "%s%s.est", Tree->opt->resultsDirectory.getConstValue(), Tree->opt->domainName.getConstValue()) ;
    if ((fout = fopen(path,"w"))==NULL)   {
       stop("allSplitsEstimation: cannot open results file: ", path)  ;
    }
@@ -584,7 +584,7 @@ void allSplitsEstimationReg(const featureTree *FTree)
    estimationReg *pEstimator ;
    FILE *fout ;
    char path[MaxPath] ;
-   sprintf(path,"%s%s.est",Tree->opt->resultsDirectory.getConstValue(), Tree->opt->domainName.getConstValue()) ;
+   snprintf(path, MaxPath, "%s%s.est",Tree->opt->resultsDirectory.getConstValue(), Tree->opt->domainName.getConstValue()) ;
    if ((fout = fopen(path,"w"))==NULL)
    {
       stop("allSplitsEstimationReg: cannot open results file: ", path)  ;
@@ -719,7 +719,7 @@ void singleTree(featureTree* const Tree) {
        fflush(stdout) ;
 
        char OutName[MaxFileNameLen] ;
-       sprintf(OutName, "%s%s.%02dtree", Tree->opt->resultsDirectory.getConstValue(), Tree->opt->domainName.getConstValue(), Tree->opt->splitIdx) ;
+       snprintf(OutName, MaxFileNameLen, "%s%s.%02dtree", Tree->opt->resultsDirectory.getConstValue(), Tree->opt->domainName.getConstValue(), Tree->opt->splitIdx) ;
        Tree->printFTreeFile(OutName, Tree->opt->splitIdx,Leaves, freedom, Accuracy, Cost, Inf, Auc,PMx, Sens, Spec, Brier, Kappa) ;
        fprintf(stdout,"\nCPU time used: %.2f seconds\n", timeMeasureDiff(buildStart, buildEnd)) ;
        fflush(stdout) ;
@@ -771,7 +771,7 @@ void singleTreeReg(featureTree* const FTree)
        fflush(stdout) ;
 
        char OutName[MaxFileNameLen] ;
-       sprintf(OutName, "%s%s.%02dt", Tree->opt->resultsDirectory.getConstValue(),
+       snprintf(OutName, MaxFileNameLen, "%s%s.%02dt", Tree->opt->resultsDirectory.getConstValue(),
     		         Tree->opt->domainName.getConstValue(), Tree->opt->splitIdx ) ;
        Tree->printFTreeFile(OutName, 0, Leaves, freedom, TestSE, TestRSE, TestAE, TestRAE) ;
    }
@@ -798,7 +798,7 @@ void allSplitsTree(featureTree* const Tree) {
    Tree->learnRF = mFALSE ;
 
    char path[MaxPath] ;
-   sprintf(path,"%s%s.treeResults", Tree->opt->resultsDirectory.getConstValue(), Tree->opt->domainName.getConstValue());
+   snprintf(path, MaxPath, "%s%s.treeResults", Tree->opt->resultsDirectory.getConstValue(), Tree->opt->domainName.getConstValue());
    FILE *to, *distrFile ;
    if ((to=fopen(path,"w"))==NULL)
    {
@@ -861,7 +861,7 @@ void allSplitsTree(featureTree* const Tree) {
          if (distrFile != NULL)
             fclose(distrFile) ;
 
-         sprintf(path,"%s%s.%02dtree", Tree->opt->resultsDirectory.getConstValue(), Tree->opt->domainName.getConstValue(), i) ;
+         snprintf(path, MaxPath, "%s%s.%02dtree", Tree->opt->resultsDirectory.getConstValue(), Tree->opt->domainName.getConstValue(), i) ;
          Tree->printFTreeFile(path,i, Leaves[i], freedom[i], Accuracy[i], Cost[i], Inf[i],Auc[i],PMx, Sens[i], Spec[i], Brier[i], Kappa[i]) ;
 
          Tree->printResultLine(to, i,  Leaves[i], freedom[i],Accuracy[i], Cost[i], Inf[i], Auc[i], Sens[i], Spec[i], Brier[i], Kappa[i]) ;
@@ -907,7 +907,7 @@ void allTreeReg(featureTree* const FTree, demandType demand)
    }
 
    char path[MaxPath], residPath[MaxPath] ;
-   sprintf(path,"%s%s.res", Tree->opt->resultsDirectory.getConstValue(),Tree->opt->domainName.getConstValue());
+   snprintf(path, MaxPath, "%s%s.res", Tree->opt->resultsDirectory.getConstValue(),Tree->opt->domainName.getConstValue());
    FILE *to, *residFile ;
    if ((to=fopen(path,"w"))==NULL)
    {
@@ -945,7 +945,7 @@ void allTreeReg(featureTree* const FTree, demandType demand)
       {
          if (demand==residuals)
          {
-            sprintf(residPath, "%s%s.%02dr", Tree->opt->resultsDirectory.getConstValue(), Tree->opt->domainName.getConstValue(), i) ;
+            snprintf(residPath, MaxPath, "%s%s.%02dr", Tree->opt->resultsDirectory.getConstValue(), Tree->opt->domainName.getConstValue(), i) ;
             if ((residFile=fopen(residPath,"w"))==NULL)
                merror("Cannot write to residuals file", residPath) ;
          }
@@ -965,7 +965,7 @@ void allTreeReg(featureTree* const FTree, demandType demand)
         if (residFile != NULL)
             fclose(residFile) ;
 
-        sprintf(path,"%s%s.%02dt", Tree->opt->resultsDirectory.getConstValue(), Tree->opt->domainName.getConstValue(),i) ;
+        snprintf(path, MaxPath, "%s%s.%02dt", Tree->opt->resultsDirectory.getConstValue(), Tree->opt->domainName.getConstValue(),i) ;
         Tree->printFTreeFile(path,i, LeavesAfter[i], freedomAfter[i],
                                TestSEafter[i], TestRSEafter[i], TestAEafter[i], TestRAEafter[i]) ;
 
@@ -1012,7 +1012,7 @@ void singleRF(featureTree* const Tree) {
 
    char path[MaxPath] ;
    FILE *to ;
-   sprintf(path,"%s%s.rfResult", Tree->opt->resultsDirectory.getConstValue(), Tree->opt->domainName.getConstValue());
+   snprintf(path, MaxPath, "%s%s.rfResult", Tree->opt->resultsDirectory.getConstValue(), Tree->opt->domainName.getConstValue());
    if ((to=fopen(path,"w"))==NULL) {
        merror("Cannot open random forests report file", path) ;
    }
@@ -1113,7 +1113,7 @@ void allSplitsRF(featureTree* const Tree) {
 
    char path[MaxPath] ;
    FILE *to, *distrFile ;
-   sprintf(path,"%s%s.rfResult", Tree->opt->resultsDirectory.getConstValue(), Tree->opt->domainName.getConstValue());
+   snprintf(path, MaxPath, "%s%s.rfResult", Tree->opt->resultsDirectory.getConstValue(), Tree->opt->domainName.getConstValue());
    if ((to=fopen(path,"w"))==NULL) {
        stop("Cannot open random forests report file",path) ;
    }
@@ -1254,7 +1254,7 @@ void domainCharacteristics(featureTree* const Tree)
 
    char path[MaxPath] ;
    FILE *to ;
-   sprintf(path,"%s%s.dataCharacteristics", Tree->opt->resultsDirectory.getConstValue(), Tree->opt->domainName.getConstValue());
+   snprintf(path, MaxPath, "%s%s.dataCharacteristics", Tree->opt->resultsDirectory.getConstValue(), Tree->opt->domainName.getConstValue());
    if ((to=fopen(path,"w"))==NULL) {
        stop("Cannot open data characteristics report file",path) ;
    }
@@ -1460,7 +1460,7 @@ void evalOrdAttrValNorm(featureTree*  Tree, demandType demand)  {
        else if (demand == ordEvalNormAttrDiff1)
 		   pEstimator->ordAVdAeqNormAttrDiff1(1,Tree->noDiscrete, kEqual, reinfPos,reinfNeg,anchor, reinfPosRnd,reinfNegRnd,anchorRnd);
        if (Tree->opt->ordEvalNoRandomNormalizers > 0) {
-		   sprintf(path,"%s%s.oer",Tree->opt->resultsDirectory.getConstValue(), Tree->opt->domainName.getConstValue()) ;
+		   snprintf(path, MaxPath, "%s%s.oer",Tree->opt->resultsDirectory.getConstValue(), Tree->opt->domainName.getConstValue()) ;
 		   if ((fout = fopen(path, "w")) == NULL) {
 			   merror("evalOrdAttrValNorm: cannot open results file: ", path);
 		   }
@@ -1472,7 +1472,7 @@ void evalOrdAttrValNorm(featureTree*  Tree, demandType demand)  {
    }
     else merror("evalOrdAttrValNorm", "unrecognized demand") ;
 
-   sprintf(path,"%s%s.oe", Tree->opt->resultsDirectory.getConstValue(), Tree->opt->domainName.getConstValue()) ;
+   snprintf(path, MaxPath, "%s%s.oe", Tree->opt->resultsDirectory.getConstValue(), Tree->opt->domainName.getConstValue()) ;
    if ((fout = fopen(path,"w"))==NULL)   {
       merror("evalOrdAttrValNorm: cannot open results file: ", path)  ;
    }
@@ -1518,13 +1518,13 @@ void runOrdEvalInst(featureTree*  Tree)  {
 	      reinfNegRnd[attrIdx].create(noOEstats, 0.0) ;
 	      anchorRnd[attrIdx].create(noOEstats, 0.0) ;
    }
-   sprintf(path1,"%s%s.oei", Tree->opt->resultsDirectory.getConstValue(), Tree->opt->domainName.getConstValue()) ;
+   snprintf(path1, MaxPath, "%s%s.oei", Tree->opt->resultsDirectory.getConstValue(), Tree->opt->domainName.getConstValue()) ;
    if ((foei = fopen(path1,"w"))==NULL)   {
         merror("runOrdEvalInst: cannot open results file: ", path1)  ;
         return ;
      }
    if (Tree->opt->ordEvalNoRandomNormalizers > 0) {
-   		   sprintf(path2,"%s%s.oeir", Tree->opt->resultsDirectory.getConstValue(), Tree->opt->domainName.getConstValue()) ;
+   		   snprintf(path2, MaxPath, "%s%s.oeir", Tree->opt->resultsDirectory.getConstValue(), Tree->opt->domainName.getConstValue()) ;
    		   if ((foeiR = fopen(path2,"w"))==NULL) {
    	          merror("runOrdEvalInst: cannot open results file: ", path2)  ;
    	          return ;
@@ -1563,7 +1563,7 @@ FILE* prepareDistrFile(int fileIdx, Options *opt) {
   FILE *distrFile = NULL ;
   if (opt->outProbDistr)     {
 	 char distrPath[MaxPath] ;
-     sprintf(distrPath, "%s%s.%03d.cpd", opt->resultsDirectory.getConstValue(), opt->domainName.getConstValue(), fileIdx) ;
+     snprintf(distrPath, MaxPath, "%s%s.%03d.cpd", opt->resultsDirectory.getConstValue(), opt->domainName.getConstValue(), fileIdx) ;
 	 if ((distrFile=fopen(distrPath,"w"))==NULL)
            merror("Cannot write to distribution file", distrPath) ;
 	 else {
@@ -1577,7 +1577,7 @@ FILE* prepareDistrFile(int fileIdx, Options *opt) {
 void saveSingleRF(featureTree* const Tree) {
    singleRF(Tree) ;
    char path[MaxPath] ;
-   sprintf(path,"%s%s.rf", Tree->opt->resultsDirectory.getConstValue(), Tree->opt->domainName.getConstValue());
+   snprintf(path, MaxPath, "%s%s.rf", Tree->opt->resultsDirectory.getConstValue(), Tree->opt->domainName.getConstValue());
    if (Tree->writeRF(path))
 	   printf("Random forest successfully saved to %s", path) ;
    else
@@ -1587,7 +1587,7 @@ void saveSingleRF(featureTree* const Tree) {
 /*
 void saveLargeRF(featureTree* const Tree) {
    char path[MaxPath] ;
-   sprintf(path,"%s%s.rf", Tree->opt->resultsDirectory, Tree->opt->domainName);
+   snprintf(path, MaxPath, "%s%s.rf", Tree->opt->resultsDirectory, Tree->opt->domainName);
    if (Tree->tempSaveForest(path))
 	   printf("Random forest successfully saved to %s", path) ;
    else
@@ -1596,7 +1596,7 @@ void saveLargeRF(featureTree* const Tree) {
 */
 void loadSingleRF(featureTree* const Tree) {
 	char path[MaxPath] ;
-	sprintf(path,"%s%s.rf", Tree->opt->resultsDirectory.getConstValue(), Tree->opt->domainName.getConstValue());
+	snprintf(path, MaxPath, "%s%s.rf", Tree->opt->resultsDirectory.getConstValue(), Tree->opt->domainName.getConstValue());
 	if (!Tree->readProblem(mTRUE, mTRUE))
 		return ;
     Tree->setDataSplit(Tree->opt->splitIdx) ;

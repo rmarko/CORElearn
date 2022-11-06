@@ -466,15 +466,15 @@ char* expr::descriptionString(void)
                     break ;
         case kNN:
                     result = new char[5] ;
-                    sprintf(result,"k-NN") ;
+                    snprintf(result, MaxFeatureStrLen, "k-NN") ;
                     break ; 
         case kNNkernel:
                     result = new char[20] ;
-                    sprintf(result,"k-NN with kernel") ;
+                    snprintf(result, MaxFeatureStrLen, "k-NN with kernel") ;
                     break ;
         case simpleBayes:
                     result = new char[16] ;
-                    sprintf(result,"simple Bayes") ;
+                    snprintf(result, MaxFeatureStrLen, "simple Bayes") ;
                     break ;
 			
         default:    merror("expr::descriptionString","Cannot print  nonexistent model") ;

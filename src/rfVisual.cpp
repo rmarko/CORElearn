@@ -223,11 +223,11 @@ SEXP featureTree::T2Rpart()
                         /*
                          * sequence index of a line
                          */
-                        sprintf(aStr, "%d", aIntLabel[i]);
+                        snprintf(aStr, 128, "%d", aIntLabel[i]);
                         SET_STRING_ELT(outVectorLabels, i, mkChar(aStr));
                 }
                 else{
-                        sprintf(aStr, "%d", aIntLabel[i]);
+                        snprintf(aStr, 128, "%d", aIntLabel[i]);
                         /*
                          * outVectorLabels must be of type STRSXP, 
                          * but sometimes it changes to CLOSXP - closure
@@ -340,7 +340,7 @@ SEXP featureTree::T2Rpart()
                         /*
                          * var line
                          */
-                        sprintf(aStr, "%d", anAttributeIndex);
+                        snprintf(aStr, 128, "%d", anAttributeIndex);
                         SET_STRING_ELT(outVectorLabels, i+line, mkChar(aStr));
                         /*
                          * splits:"id"
@@ -351,9 +351,9 @@ SEXP featureTree::T2Rpart()
                         SET_VECTOR_ELT(outSplitMatrix, atPos, auxLen);
 
                         noAttributeCount++;
-                        sprintf(aStr, "%d", anAttributeIndex);
+                        snprintf(aStr, 128, "%d", anAttributeIndex);
                         SET_STRING_ELT(attributeLabels, noAttributeCount*2, mkChar(aStr));
-                        sprintf(aStr, "%s", anAttribute->AttributeName);
+                        snprintf(aStr, 128, "%s", anAttribute->AttributeName);
                         SET_STRING_ELT(attributeLabels, noAttributeCount*2+1, mkChar(aStr));
                 }
         }
@@ -588,11 +588,11 @@ SEXP regressionTree::T2Rpart()
                         /*
                          * sequence index of a line
                          */
-                        sprintf(aStr, "%d", aIntLabel[i]);
+                        snprintf(aStr, 128, "%d", aIntLabel[i]);
                         SET_STRING_ELT(outVectorLabels, i, mkChar(aStr));
                 }
                 else{
-                        sprintf(aStr, "%d", aIntLabel[i]);
+                        snprintf(aStr, 128, "%d", aIntLabel[i]);
                         /*
                          * outVectorLabels must be of type STRSXP, 
                          * but sometimes it changes to CLOSXP - closure
@@ -707,7 +707,7 @@ SEXP regressionTree::T2Rpart()
                         /*
                          * var line
                          */
-                        sprintf(aStr, "%d", anAttributeIndex);
+                        snprintf(aStr, 128, "%d", anAttributeIndex);
                         SET_STRING_ELT(outVectorLabels, i+line, mkChar(aStr));
                         /*
                          * splits:"id"
@@ -718,9 +718,9 @@ SEXP regressionTree::T2Rpart()
                         SET_VECTOR_ELT(outSplitMatrix, atPos, auxLen);
 
                         noAttributeCount++;
-                        sprintf(aStr, "%d", anAttributeIndex);
+                        snprintf(aStr, 128, "%d", anAttributeIndex);
                         SET_STRING_ELT(attributeLabels, noAttributeCount*2, mkChar(aStr));
-                        sprintf(aStr, "%s", anAttribute->AttributeName);
+                        snprintf(aStr, 128, "%s", anAttribute->AttributeName);
                         SET_STRING_ELT(attributeLabels, noAttributeCount*2+1, mkChar(aStr));
                 }
         }

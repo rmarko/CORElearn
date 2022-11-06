@@ -8,6 +8,7 @@
 
 
 #include <cstdio>
+#include <cstdlib>
 
 #include "general.h"
 #include "error.h"

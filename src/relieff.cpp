@@ -87,7 +87,7 @@ void estimation::ReliefF(int contAttrFrom, int contAttrTo,
      char path[MaxPath] ;
      int iPrint, contCount=0, discCount=0 ; 
      FILE *fileRelief ;
-     sprintf(path,"%s%s.%02dei",fTree->resultsDirectory, fTree->domainName,fTree->currentSplitIdx) ; // estimation of weights at each iteration
+     snprintf(path, MaxPath, "%s%s.%02dei",fTree->resultsDirectory, fTree->domainName,fTree->currentSplitIdx) ; // estimation of weights at each iteration
      if ((fileRelief = fopen(path,"w"))==NULL)
      {
         merror("estimation::ReliefF cannot open file for writing weights of each iteration: ", path)  ;
@@ -332,7 +332,7 @@ void estimation::ReliefF(int contAttrFrom, int contAttrTo,
      char path[MaxPath] ;
      int iPrint, contCount=0, discCount=0 ;
      FILE *fileRelief ;
-     sprintf(path,"%s%s.%02dei",fTree->resultsDirectory, fTree->domainName,fTree->currentSplitIdx) ; // estimation of weights at each iteration
+     snprintf(path,MaxPath,"%s%s.%02dei",fTree->resultsDirectory, fTree->domainName,fTree->currentSplitIdx) ; // estimation of weights at each iteration
      if ((fileRelief = fopen(path,"w"))==NULL)
      {
         merror("estimation::ReliefF cannot open file for writting weights of each iteration: ", path)  ;
@@ -671,7 +671,7 @@ void estimation::ReliefFbestK(int contAttrFrom, int contAttrTo, int discAttrFrom
    #if defined(PRINT_EACH_K)
      char path[MaxPath] ;
      FILE *fileRelief ;
-     sprintf(path,"%s%s.%02dek",fTree->resultsDirectory, fTree->domainName,fTree->currentSplitIdx) ; // estimation of weights for each k
+     snprintf(path, MaxPath, "%s%s.%02dek",fTree->resultsDirectory, fTree->domainName,fTree->currentSplitIdx) ; // estimation of weights for each k
      if ((fileRelief = fopen(path,"w"))==NULL)
      {
         merror("estimation::ReliefFbestK cannot open file for writting estimations for each k: ", path)  ;

@@ -33,9 +33,6 @@
 #include "error.h"
 #include "options.h"
 
-#if !defined(R_PORT)
-#define Rprintf printf
-#endif
 
 using namespace std ;
 
@@ -305,7 +302,7 @@ void Options::processOptions(void)
    if (childUID == -1)  {
      // error
       char buf[2048] ;
-      sprintf(buf, "Cannot run editor %s because: ",CommandStr) ;
+      snprintf(buf, 2048, "Cannot run editor %s because: ",CommandStr) ;
       switch (errno) {
           case E2BIG: strcat(buf,"Argument list exceeds 1024 bytes") ;
                       break ;
@@ -385,7 +382,7 @@ int Options::optionsFromStrings(int noOptions, marray<char* > &optionsName, marr
 {
 	char optBuf[MaxNameLen] ;
     for (int i=0 ; i < noOptions ; i++) {
-     	sprintf(optBuf,"%s=%s",optionsName[i],optionsVal[i]) ;
+     	snprintf(optBuf, MaxNameLen, "%s=%s",optionsName[i],optionsVal[i]) ;
      	assignOption(optBuf) ;
     }
 	return 1 ;
@@ -536,7 +533,7 @@ void Options::parseOption(char *optString, char *keyword, char *key) {
         booleanT estSwitch = mFALSE ;
 		char estKeyword[MaxNameLen] ;
         for (int estIdx = 1 ; estIdx <= NoEstimators ; estIdx++)  {
-		   sprintf(estKeyword, "est%s",estName[estIdx].brief) ;
+		   snprintf(estKeyword, MaxNameLen, "est%s",estName[estIdx].brief) ;
 		   if (strcmp(keyword, estKeyword)==0) {
 			   estSwitch =mTRUE ;
                if (key[0] == 'y' || key[0] == 'Y')
@@ -544,7 +541,7 @@ void Options::parseOption(char *optString, char *keyword, char *key) {
                else  if (key[0] == 'n' || key[0] == 'N')
                   estOn[estIdx] = mFALSE ;
                else {
-                 sprintf(errBuf, "est%s (attribute estimator \"%s\") should be on (y, Y) or off (n, N)", estName[estIdx].brief, estName[estIdx].dsc) ;
+                 snprintf(errBuf, MaxNameLen, "est%s (attribute estimator \"%s\") should be on (y, Y) or off (n, N)", estName[estIdx].brief, estName[estIdx].dsc) ;
                  merror(errBuf, "") ;
                }
 			   break ;
@@ -553,7 +550,7 @@ void Options::parseOption(char *optString, char *keyword, char *key) {
        // switches for regression estimation
 	   if (!estSwitch) {
          for (int estIdx = 1 ; estIdx <= NoEstimatorsReg ; estIdx++)  {
-	       sprintf(estKeyword, "est%s",estNameReg[estIdx].brief) ;
+	       snprintf(estKeyword, MaxNameLen, "est%s",estNameReg[estIdx].brief) ;
 	       if (strcmp(keyword, estKeyword)==0) {
 		     estSwitch =mTRUE ;
              if (key[0] == 'y' || key[0] == 'Y')
@@ -561,7 +558,7 @@ void Options::parseOption(char *optString, char *keyword, char *key) {
              else  if (key[0] == 'n' || key[0] == 'N')
                 estOnReg[estIdx] = mFALSE ;
              else {
-               sprintf(errBuf, "est%s (attribute estimator \"%s\") should be on (y, Y) or off (n, N)", estNameReg[estIdx].brief, estNameReg[estIdx].dsc) ;
+               snprintf(errBuf, MaxNameLen, "est%s (attribute estimator \"%s\") should be on (y, Y) or off (n, N)", estNameReg[estIdx].brief, estNameReg[estIdx].dsc) ;
                merror(errBuf, "") ;
              }
 		     break ;
@@ -737,7 +734,7 @@ void Options::parseOption(char *optString, char *keyword, char *key) {
        if (temp > 0 && temp <= NoEstimators)
          selectionEstimator = temp ;
 	   else {
-         sprintf(errBuf, "selectionEstimator (estimator for selection of attributes and binarization in classification) should be one of existing (1-%d)", NoEstimators) ;
+         snprintf(errBuf, MaxNameLen, "selectionEstimator (estimator for selection of attributes and binarization in classification) should be one of existing (1-%d)", NoEstimators) ;
 		 merror(errBuf, "") ;
 	   }
 	}
@@ -747,7 +744,7 @@ void Options::parseOption(char *optString, char *keyword, char *key) {
        if (temp > 0 && temp <= NoEstimatorsReg)
          selectionEstimatorReg = temp ;
 	   else {
-         sprintf(errBuf, "selectionEstimatorReg (estimator for selection of attributes and binarization in regression) should be one of existing (1-%d)", NoEstimatorsReg) ;
+         snprintf(errBuf, MaxNameLen, "selectionEstimatorReg (estimator for selection of attributes and binarization in regression) should be one of existing (1-%d)", NoEstimatorsReg) ;
 		 merror(errBuf, "") ;
 	   }
 	}
@@ -847,7 +844,7 @@ void Options::parseOption(char *optString, char *keyword, char *key) {
        if (temp > 0 && temp <= NoEstimators)
           constructionEstimator = temp ;
 	   else {
-         sprintf(errBuf, "constructionEstimator (estimator of constructs in classification) should be one of existing (1-%d)", NoEstimators) ;
+         snprintf(errBuf, MaxNameLen, "constructionEstimator (estimator of constructs in classification) should be one of existing (1-%d)", NoEstimators) ;
 		 merror(errBuf, "") ;
 	   }
 	}
@@ -857,7 +854,7 @@ void Options::parseOption(char *optString, char *keyword, char *key) {
        if (temp > 0 && temp <= NoEstimatorsReg)
           constructionEstimatorReg = temp ;
 	   else {
-         sprintf(errBuf, "constructionEstimatorReg (estimator of constructs in regression) should be one of existing (1-%d)", NoEstimatorsReg) ;
+         snprintf(errBuf, MaxNameLen, "constructionEstimatorReg (estimator of constructs in regression) should be one of existing (1-%d)", NoEstimatorsReg) ;
 		 merror(errBuf, "") ;
 	   }
 	}

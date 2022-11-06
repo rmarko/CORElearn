@@ -123,7 +123,7 @@ int dataStore::dscFromR(int noDiscreteAttr, marray<int> &noDiscreteValues,
 		    	vlIter = valList.first() ;
 		    }
 		    else
-			    sprintf(buf, "D%d", noDiscrete) ;
+			    snprintf(buf, MaxNameLen, "D%d", noDiscrete) ;
 			strcpy(AttrDesc[iA].AttributeName=new char[strlen(buf)+1], buf);
 			AttrDesc[iA].continuous = mFALSE ; // should be discrete
 			AttrDesc[iA].ValueName.create(noDiscreteValues[noDiscrete]) ;
@@ -134,7 +134,7 @@ int dataStore::dscFromR(int noDiscreteAttr, marray<int> &noDiscreteValues,
 					vlIter = valList.next(vlIter) ;
 				}
 				else
-				   sprintf(buf, "V%d", iV) ;
+				   snprintf(buf, MaxNameLen, "V%d", iV) ;
 				strcpy(AttrDesc[iA].ValueName[iV-1]=new char[strlen(buf)+1], buf) ;
 			}
 			AttrDesc[iA].NoValues = noDiscreteValues[noDiscrete];
@@ -145,7 +145,7 @@ int dataStore::dscFromR(int noDiscreteAttr, marray<int> &noDiscreteValues,
 		    if (numAttrNames[noNumeric])
 		    	strcpy(buf, numAttrNames[noNumeric]);
 		    else
-		      sprintf(buf, "N%d", noNumeric) ;
+		      snprintf(buf, MaxNameLen, "N%d", noNumeric) ;
 			strcpy(AttrDesc[iA].AttributeName=new char[strlen(buf)+1], buf);
 			AttrDesc[iA].continuous = mTRUE ;
 			AttrDesc[iA].NoValues = 0;

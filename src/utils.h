@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <cstdlib>
+#include <cstdio>
 
 #include "general.h"
 #include "contain.h"

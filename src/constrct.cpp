@@ -164,12 +164,12 @@ void construct::descriptionString(char* const Str)
    switch(countType)
    {
       case aCONTINUOUS:
-           //sprintf(Str,"[%d] %s <= %f", splitEstimator, dscrStr, splitValue) ;
-           sprintf(Str,"%s <= %f", dscrStr, splitValue) ;
+           //snprintf(Str, MaxFeatureStrLen, "[%d] %s <= %f", splitEstimator, dscrStr, splitValue) ;
+           snprintf(Str, MaxFeatureStrLen, "%s <= %f", dscrStr, splitValue) ;
            break ;
       case aDISCRETE:
-           //sprintf(Str, "[%d] %s", splitEstimator, dscrStr) ;
-           sprintf(Str, "%s", dscrStr) ;
+           //snprintf(Str, MaxFeatureStrLen, "[%d] %s", splitEstimator, dscrStr) ;
+           snprintf(Str, MaxFeatureStrLen, "%s", dscrStr) ;
            if (compositionType == cSINGLEattribute)
            { 
              strcat(Str, "= (") ; 
@@ -211,36 +211,36 @@ char* construct::description(constructNode *Node)
    switch(Node->nodeType)
    {
       case cnDISCattrValue:
-           sprintf(Str, "(%s = %s)", gFT->AttrDesc[gFT->DiscIdx[Node->attrIdx]].AttributeName,
+           snprintf(Str, MaxFeatureStrLen, "(%s = %s)", gFT->AttrDesc[gFT->DiscIdx[Node->attrIdx]].AttributeName,
                                    gFT->AttrDesc[gFT->DiscIdx[Node->attrIdx]].ValueName[Node->valueIdx-1] ) ;
            break ;          
       case cnCONTattrValue:
            if (Node->lowerBoundary == -DBL_MAX)
-              sprintf(Str, "(%s <= %.3f)", gFT->AttrDesc[gFT->ContIdx[Node->attrIdx]].AttributeName,
+              snprintf(Str, MaxFeatureStrLen, "(%s <= %.3f)", gFT->AttrDesc[gFT->ContIdx[Node->attrIdx]].AttributeName,
                                            Node->upperBoundary ) ;
            else
              if (Node->upperBoundary == DBL_MAX)
-                sprintf(Str, "(%s > %.3f)", gFT->AttrDesc[gFT->ContIdx[Node->attrIdx]].AttributeName,
+                snprintf(Str, MaxFeatureStrLen, "(%s > %.3f)", gFT->AttrDesc[gFT->ContIdx[Node->attrIdx]].AttributeName,
                                            Node->lowerBoundary ) ;
              else
-                sprintf(Str, "(%.3f < %s <= %.3f)", Node->lowerBoundary,
+                snprintf(Str, MaxFeatureStrLen, "(%.3f < %s <= %.3f)", Node->lowerBoundary,
                                                     gFT->AttrDesc[gFT->ContIdx[Node->attrIdx]].AttributeName,
                                                     Node->upperBoundary ) ;
            break ;
       
       case cnCONTattribute:
-           sprintf(Str,"%s", gFT->AttrDesc[gFT->ContIdx[Node->attrIdx]].AttributeName) ;
+           snprintf(Str, MaxFeatureStrLen, "%s", gFT->AttrDesc[gFT->ContIdx[Node->attrIdx]].AttributeName) ;
            break ;
       
       case cnDISCattribute:
-           sprintf(Str, "%s", gFT->AttrDesc[gFT->DiscIdx[Node->attrIdx]].AttributeName) ;
+           snprintf(Str, MaxFeatureStrLen, "%s", gFT->AttrDesc[gFT->DiscIdx[Node->attrIdx]].AttributeName) ;
            break ;
 
       case cnAND:
          {
             char *leftStr = description(Node->left) ;
             char *rightStr = description(Node->right) ;
-            sprintf(Str, "%s & %s", leftStr, rightStr) ;
+            snprintf(Str, MaxFeatureStrLen, "%s & %s", leftStr, rightStr) ;
             delete [] leftStr ;
             delete [] rightStr ;
          }
@@ -249,7 +249,7 @@ char* construct::description(constructNode *Node)
          {
             char *leftStr = description(Node->left) ;
             char *rightStr = description(Node->right) ;
-            sprintf(Str, "%s * %s", leftStr, rightStr) ;
+            snprintf(Str, MaxFeatureStrLen, "%s * %s", leftStr, rightStr) ;
             delete [] leftStr ;
             delete [] rightStr ;
          }
@@ -258,7 +258,7 @@ char* construct::description(constructNode *Node)
          {
             char *leftStr = description(Node->left) ;
             char *rightStr = description(Node->right) ;
-            sprintf(Str, "%s + %s", leftStr, rightStr) ;
+            snprintf(Str, MaxFeatureStrLen, "%s + %s", leftStr, rightStr) ;
             delete [] leftStr ;
             delete [] rightStr ;
          }

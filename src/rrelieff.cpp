@@ -400,7 +400,7 @@ void estimationReg::CReliefDensity(int contAttrFrom, int contAttrTo,
      int iPrint, contCount=0, discCount=0 ;
      FILE *fileRelief ;
      double dfC ;
-     sprintf(path,"%s%s.%02dei",fTree->resultsDirectory, fTree->domainName,fTree->splitIdx) ; // estimationReg of weights at each iteration
+     snprintf(path, MaxPath, "%s%s.%02dei",fTree->resultsDirectory, fTree->domainName,fTree->splitIdx) ; // estimationReg of weights at each iteration
      if ((fileRelief = fopen(path,"w"))==NULL)
      {
         merror("estimationReg::ReliefF cannot open file for writting weights of each iteration: ", path)  ;
@@ -1162,7 +1162,7 @@ void estimationReg::RReliefFbestK(int contAttrFrom, int contAttrTo, int discAttr
    #if defined(PRINT_EACH_K)
      char path[MaxPath] ;
      FILE *fileRelief ;
-     sprintf(path,"%s%s.%02dek",fTree->resultsDirectory, fTree->domainName,fTree->splitIdx) ; // estimationReg of weights for each k
+     snprintf(path, MaxPath, "%s%s.%02dek",fTree->resultsDirectory, fTree->domainName,fTree->splitIdx) ; // estimationReg of weights for each k
      if ((fileRelief = fopen(path,"w"))==NULL)
      {
         merror("estimationReg::RReliefFbestK cannot open file for writting estimationReg for each k: ", path)  ;

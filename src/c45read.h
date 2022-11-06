@@ -1,6 +1,8 @@
 #if !defined(C45READ_H)
 #define C45READ_H
 
+#include <cstdio>
+
 #include "general.h"
 #include "contain.h"
 #include "mstring.h"

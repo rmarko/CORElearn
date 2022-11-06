@@ -125,7 +125,10 @@ void estimation::binarizeGeneral(construct &nodeConstruct, int firstFreeDiscSlot
 		   // estimate and select best
 		   bestIdx = estimate(eopt.selectionEstimator, 0, 0,
 				firstFreeDiscSlot, firstFreeDiscSlot+noIncrements, bestType) ;
-		   nodeConstruct.leftValues =  leftValues[bestIdx - firstFreeDiscSlot] ;
+		   if (bestIdx >= firstFreeDiscSlot)
+		      nodeConstruct.leftValues =  leftValues[bestIdx - firstFreeDiscSlot] ;
+		   else // invalid estimates
+			   nodeConstruct.leftValues.init(mTRUE) ; // put all to left, getting invalid split
 		   //bestEstimation =  DiscEstimation[bestIdx] ;
 		}
 	}
@@ -171,7 +174,10 @@ void estimation::binarizeGeneral(construct &nodeConstruct, int firstFreeDiscSlot
 				}
 			bestIdx = estimate(eopt.selectionEstimator, 0, 0,
 					firstFreeDiscSlot, firstFreeDiscSlot + added, bestType) ;
-			currentBest = leftValues[bestIdx - firstFreeDiscSlot] ;
+			if (bestIdx >= firstFreeDiscSlot) // valid estimate
+			   currentBest = leftValues[bestIdx - firstFreeDiscSlot] ;
+			else break ;
+
 			if (DiscEstimation[bestIdx] > bestEstimation)
 			{
 				// check if split is valid
@@ -282,7 +288,10 @@ double estimation::bestSplitGeneral(construct &nodeConstruct, int firstFreeDiscS
 			firstFreeDiscSlot, firstFreeDiscSlot + sampleSize, bestType) ;
 	eopt.binaryEvaluation = binaryEvaluationBefore ;
 
-	return (sortedAttr[splits[bestIdx-firstFreeDiscSlot]].key + sortedAttr[splits[bestIdx-firstFreeDiscSlot]+1].key)/2.0 ;
+	if (bestIdx >= firstFreeDiscSlot)
+		return (sortedAttr[splits[bestIdx-firstFreeDiscSlot]].key + sortedAttr[splits[bestIdx-firstFreeDiscSlot]+1].key)/2.0 ;
+	else
+		return - DBL_MAX ;
 }
 
 
@@ -390,19 +399,21 @@ double estimation::discretizeGreedy(int ContAttrIdx, int maxBins, marray<double>
 			prepareDiscAttr(firstFreeDiscSlot + j, currentNoValues) ;
 		// estimate and select best
 		currentIdx = estimate(eopt.selectionEstimator, 0, 0, firstFreeDiscSlot, firstFreeDiscSlot + sampleSize, bestType) ;
-		bound = (sortedAttr[splits[currentIdx - firstFreeDiscSlot]].key
-				+ sortedAttr[splits[currentIdx - firstFreeDiscSlot]+1].key)/2.0 ;
-		currentBounds.addToAscSorted(bound) ;
-		if (DiscEstimation[currentIdx] > bestEstimate)
-		{
-			bestEstimate = DiscEstimation[currentIdx] ;
-			Bounds = currentBounds ;
-			currentLimit = 0 ;
+		if (currentIdx >= firstFreeDiscSlot) {
+		   bound = (sortedAttr[splits[currentIdx - firstFreeDiscSlot]].key
+			    	+ sortedAttr[splits[currentIdx - firstFreeDiscSlot]+1].key)/2.0 ;
+		   currentBounds.addToAscSorted(bound) ;
+		   if (DiscEstimation[currentIdx] > bestEstimate) {
+			  bestEstimate = DiscEstimation[currentIdx] ;
+			  Bounds = currentBounds ;
+			  currentLimit = 0 ;
+		    }
+		    else
+			   currentLimit ++ ;
+		    splits[currentIdx-firstFreeDiscSlot] = splits[--sampleSize] ;
+		    currentNoValues ++ ;
 		}
-		else
-			currentLimit ++ ;
-		splits[currentIdx-firstFreeDiscSlot] = splits[--sampleSize] ;
-		currentNoValues ++ ;
+		else break ;
 	}
 
 	eopt.binaryEvaluation = binaryEvaluationBefore ;
@@ -591,6 +602,7 @@ void estimation::estBinarized(int selectedEstimator, int contAttrFrom, int contA
 
 	eopt.binaryEvaluateNumericAttributes  = binaryBefore ; // restore value
 	eopt.binaryEvaluation = binaryEvaluationBefore ;
+
 
 	int iBin ;
 	for (iDisc=discAttrFrom ; iDisc < discAttrTo; iDisc++)

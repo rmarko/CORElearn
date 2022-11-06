@@ -248,7 +248,7 @@ void estimation::initialize(marray<int> &inDTrain, marray<double> &inpDTrain,
 
    for (i=0; i < noNumeric ; i++)
    {
-      step[i] =  valueInterval[i]/noNAdiscretizationIntervals*double(1.000001) ; // 1.000001 - to avoid overflows due to numerical aproximation
+      step[i] =  valueInterval[i]/noNAdiscretizationIntervals*double(1.000001) ; // 1.000001 - to avoid overflows due to numerical approximation
       for (j=1 ; j <= noClasses ; j++)
         NAnumValue(j,i).create(noNAdiscretizationIntervals +1, 0.0) ;
    }

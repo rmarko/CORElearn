@@ -198,7 +198,7 @@ int c45read::readC45data(FILE *from, const char *NAstr) {
             		pos = ait->value.values.findPos(valStr) ;
             		if (pos < 1){
 						char *ebuf = new char[ait->value.name.len()+20] ;
-						sprintf(ebuf,"%s in line %d",ait->value.name.getValue(),lineNo) ;
+						snprintf(ebuf,ait->value.name.len()+20, "%s in line %d",ait->value.name.getValue(),lineNo) ;
             			merror("Invalid value for attribute ", ebuf) ;
 						delete [] ebuf ;
             			return 0 ;

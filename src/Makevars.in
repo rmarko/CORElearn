@@ -1,4 +1,4 @@
-PKG_CPPFLAGS = @flags@
+PKG_CXXFLAGS = @flags@
 PKG_LIBS = @flags@
 
 

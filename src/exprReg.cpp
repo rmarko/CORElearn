@@ -584,34 +584,34 @@ char* exprReg::descriptionString(exprRegNode* Node)
                     leftString = descriptionString(Node->left) ;
                     rightString = descriptionString(Node->right) ;
                     result = new char[strlen(leftString)+strlen(rightString)+8] ;
-                    sprintf(result,"(%s) * (%s)",leftString,rightString) ;
+                    snprintf(result, MaxFeatureStrLen, "(%s) * (%s)",leftString,rightString) ;
                     delete [] leftString ;
                     delete [] rightString ;
                     return result ;
 
         case constTimesAttr:
                     result = new char[strlen(gRT->AttrDesc[gRT->ContIdx[Node->iMain]].AttributeName)+32] ;
-                    sprintf(result,"%.5f*%s",Node->dMain,gRT->AttrDesc[gRT->ContIdx[Node->iMain]].AttributeName) ;
+                    snprintf(result, MaxFeatureStrLen, "%.5f*%s",Node->dMain,gRT->AttrDesc[gRT->ContIdx[Node->iMain]].AttributeName) ;
                     return result ;
 
         case floatConstant:
                     result = new char[32] ;
-                    sprintf(result,"%.5f",Node->dMain) ;
+                    snprintf(result, 32, "%.5f",Node->dMain) ;
                     return result ;
 
         case kNNreg:
                     result = new char[32] ;
-                    sprintf(result,"%d-NN of %d",Node->iMain, Node->iAux) ;
+                    snprintf(result, 32, "%d-NN of %d",Node->iMain, Node->iAux) ;
                     return result ;
 
         case kernelRegression:
                     result = new char[64] ;
-                    sprintf(result,"Gaussopt->nnKernelWidthReg(%d,%.2f) of %d",Node->iMain, Node->dMain, Node->iAux) ;
+                    snprintf(result, 64, "Gaussopt->nnKernelWidthReg(%d,%.2f) of %d",Node->iMain, Node->dMain, Node->iAux) ;
                     return result ;
 
         case LWLR:
                     result = new char[64] ;
-                    sprintf(result,"LWLR(%d,%.2f) of %d",Node->iMain, Node->dMain, Node->iAux) ;
+                    snprintf(result, 64, "LWLR(%d,%.2f) of %d",Node->iMain, Node->dMain, Node->iAux) ;
                     return result ;
 
         default:    merror("exprReg::descriptionString","invalid operator") ;

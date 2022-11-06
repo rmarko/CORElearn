@@ -27,10 +27,10 @@ void estimationReg::binarizeGeneral(int selectedEstimator, constructReg &nodeCon
 
    int NoValues = nodeConstruct.noValues ;
    nodeConstruct.leftValues.create(NoValues+1,mFALSE) ;
-   
+   bestEstimation = -DBL_MAX ;
+
    if (NoValues < 2) 
    {
-	  bestEstimation = -DBL_MAX ;
       return ;
    }
 
@@ -51,6 +51,9 @@ void estimationReg::binarizeGeneral(int selectedEstimator, constructReg &nodeCon
 	   i = estimate(eopt.selectionEstimatorReg, 1, 1, firstFreeDiscSlot, firstFreeDiscSlot+1, bestType) ;
        nodeConstruct.leftValues[1] = mTRUE ;
        bestEstimation =  DiscEstimation[firstFreeDiscSlot] ;
+
+       eopt.binaryEvaluation = binaryEvaluationBefore ;
+       return ;
    }
   
 
@@ -132,8 +135,10 @@ void estimationReg::binarizeGeneral(int selectedEstimator, constructReg &nodeCon
      // estimate and select best
      bestIdx = estimate(selectedEstimator, 1, 1,
                                firstFreeDiscSlot, firstFreeDiscSlot+noIncrements, bestType) ;
-     nodeConstruct.leftValues = leftValues[bestIdx - firstFreeDiscSlot] ; 
-     bestEstimation = DiscEstimation[bestIdx] ;
+     if (bestIdx >= firstFreeDiscSlot) {
+        nodeConstruct.leftValues = leftValues[bestIdx - firstFreeDiscSlot] ;
+        bestEstimation = DiscEstimation[bestIdx] ;
+     }
    }
    else   {  // greedy search
      adjustTables(0, firstFreeDiscSlot + NoValues) ;
@@ -168,12 +173,15 @@ void estimationReg::binarizeGeneral(int selectedEstimator, constructReg &nodeCon
           }
         bestIdx = estimate(selectedEstimator, 1, 1,
                                firstFreeDiscSlot, firstFreeDiscSlot + added, bestType) ;
-        currentBest = leftValues[bestIdx - firstFreeDiscSlot] ; 
-        if (DiscEstimation[bestIdx] > bestEstimation)
-        {
-          bestEstimation = DiscEstimation[bestIdx] ;
-          nodeConstruct.leftValues =  currentBest ;
+        if (bestIdx >= firstFreeDiscSlot) {
+           currentBest = leftValues[bestIdx - firstFreeDiscSlot] ;
+           if (DiscEstimation[bestIdx] > bestEstimation)
+           {
+             bestEstimation = DiscEstimation[bestIdx] ;
+             nodeConstruct.leftValues =  currentBest ;
+           }
         }
+        else break ;
      }
    }
    eopt.binaryEvaluation = binaryEvaluationBefore ;
@@ -289,6 +297,7 @@ double estimationReg::bestSplitGeneral(int selectedEstimator, constructReg &node
    int i, j ;
    int OKvalues = 0 ;
    double attrValue ;
+   bestEstimation = - DBL_MAX ;
    for (j=0 ; j < TrainSize ; j++)
    {
       attrValue = nodeConstruct.continuousValue(DiscValues,NumValues,j) ;
@@ -300,7 +309,6 @@ double estimationReg::bestSplitGeneral(int selectedEstimator, constructReg &node
    }
    if (OKvalues <= 1)    // all the cases have missing value of the attribute or only one OK
    {
-      bestEstimation = - DBL_MAX ;
       return - DBL_MAX ; // smaller than any value, so all examples will go into one branch
    }
    sortedAttr.setFilled(OKvalues) ;
@@ -318,7 +326,6 @@ double estimationReg::bestSplitGeneral(int selectedEstimator, constructReg &node
    OKvalues = lastUnique+1 ;
     if (OKvalues <= 1)    
    {
-      bestEstimation = - DBL_MAX ;
       return - DBL_MAX ; // smaller than any value, so all examples will go into one branch
    }
 
@@ -356,11 +363,13 @@ double estimationReg::bestSplitGeneral(int selectedEstimator, constructReg &node
    // estimate and select best
    int bestIdx = estimate(selectedEstimator, 1, 1,
                             firstFreeDiscSlot, firstFreeDiscSlot+sampleSize, bestType) ;
-   bestEstimation = DiscEstimation[bestIdx] ;
-     
    eopt.binaryEvaluation = binaryEvaluationBefore ;
 
-   return (sortedAttr[splits[bestIdx-firstFreeDiscSlot]].key + sortedAttr[splits[bestIdx-firstFreeDiscSlot]+1].key)/2.0 ;
+   if (bestIdx >= firstFreeDiscSlot) {
+     bestEstimation = DiscEstimation[bestIdx] ;
+     return (sortedAttr[splits[bestIdx-firstFreeDiscSlot]].key + sortedAttr[splits[bestIdx-firstFreeDiscSlot]+1].key)/2.0 ;
+   }
+   else return -DBL_MAX ;
 }
 
 
@@ -762,18 +771,20 @@ double estimationReg::discretizeGreedy(int ContAttrIdx, int maxBins, marray<doub
 			prepareDiscAttr(noDiscrete + j, currentNoValues) ;
 		// estimate and select best
 		currentIdx = estimate(eopt.selectionEstimatorReg, 1, 1, noDiscrete, noDiscrete+sampleSize, bestType) ;
-		bound = (sortedAttr[splits[currentIdx-noDiscrete]].key	+ sortedAttr[splits[currentIdx-noDiscrete]+1].key)/2.0 ;
-		currentBounds.addToAscSorted(bound) ;
-		if (DiscEstimation[currentIdx] > bestEstimate)
-		{
-			bestEstimate = DiscEstimation[currentIdx] ;
-			Bounds = currentBounds ;
-			currentLimit = 0 ;
+		if (currentIdx >= noDiscrete) {
+			bound = (sortedAttr[splits[currentIdx-noDiscrete]].key	+ sortedAttr[splits[currentIdx-noDiscrete]+1].key)/2.0 ;
+  		    currentBounds.addToAscSorted(bound) ;
+		    if (DiscEstimation[currentIdx] > bestEstimate) {
+			  bestEstimate = DiscEstimation[currentIdx] ;
+			  Bounds = currentBounds ;
+			  currentLimit = 0 ;
+		    }
+		    else
+			  currentLimit ++ ;
+		    splits[currentIdx-noDiscrete] = splits[--sampleSize] ;
+		    currentNoValues ++ ;
 		}
-		else
-			currentLimit ++ ;
-		splits[currentIdx-noDiscrete] = splits[--sampleSize] ;
-		currentNoValues ++ ;
+		else break ;
 	}
 	return bestEstimate ;
 }

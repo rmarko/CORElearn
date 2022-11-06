@@ -1,6 +1,8 @@
 #if !defined(OPTIONS_H)
 #define OPTIONS_H
 
+#include <cstdio>
+
 #include "general.h"
 #include "contain.h"
 #include "mstring.h"
@@ -80,7 +82,7 @@ public:
    int discretizationIntervals ;
    int maxValues4Exhaustive ; // maximal values of discrete attribute values to try exhaustive binarization
    int maxValues4Greedy ; // maximal values of discrete attribute values to try greedy binarization;
-                          // if an attribute has more vaèues than this random binarization is tried
+                          // if an attribute has more values than this, random binarization is tried
 
    // pruning
    int selectedPruner ;

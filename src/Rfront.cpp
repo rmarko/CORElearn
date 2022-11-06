@@ -53,7 +53,7 @@ extern "C" {
 
 marray<dataStore*> allModels; // stores pointers to all the active models, one for each
 
-
+#if defined(R_PORT)
 #define CALLDEF(name, n)  {#name, (DL_FUNC) &name, n}
 
 const static R_CallMethodDef R_CallDef[] = {
@@ -100,12 +100,14 @@ const static R_CMethodDef R_CDef[] = {
 
 void R_init_CORElearn(DllInfo *dll)
 {
-    R_registerRoutines(dll, R_CDef, R_CallDef, NULL, NULL);
+	R_registerRoutines(dll, R_CDef, R_CallDef, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
+    //R_useDynamicSymbols(dll, TRUE); // for debugging to find entry points
     R_forceSymbols(dll, TRUE);
-
+    //R_forceSymbols(dll, FALSE); // for debugging to find entry points
 }
 
+#endif
 
 // on entry to library
 void initCore(int *maxModels) {
