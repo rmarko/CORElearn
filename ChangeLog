@@ -1,4 +1,22 @@
-CORElearn-1.50.2, 2017-03-27: changed the name of swap functio
+CORElearn-1.57.1, 2022-11-04: changing sprintf into snprintf, submitted to CRAN
+CORElearn-1.57.0, 2022-11-04: fixing an UTF-8 character in comments
+CORElearn-1.56.0, 2021-03-23: fixing a bug in calibration, submitted to CRAN
+CORElearn-1.55.0, 2020-02-09: fixing Imports field in Description file
+CORElearn-1.54.2, 2020-02-08: fixing Description and Namespace file, submitted to CRAN 
+CORElearn-1.54.1, 2020-02-07: fixing unchecked returns while reading from files
+CORElearn-1.54.0, 2019-06-27: improvements in documentation of attrEval
+CORElearn-1.53.2, 2018-11-17: added ciDecorate parameter to plot.ordEval function
+CORElearn-1.53.1, 2018-09-29:*changed OpenMP flags to assure compilaion with some obscure compilers
+CORElearn-1.53.0, 2018-09-26: fixing bug in checking returned indices of estimators
+CORElearn-1.52.1, 2018-04-02: fixing bug in declaring my own generic function for predict surfacing due to changes in R3.5.0
+CORElearn-1.52.0, 2017-12-27: making discretization more robust to NA values
+CORElearn-1.51.2, 2017-08-08: fixing grammar error in Description file
+CORElearn-1.51.1, 2017-08-08: added support for cross-validated evaluation of CoreModel
+CORElearn-1.51.0, 2017-06-23: added support for cross-validated evaluation of CoreModel
+CORElearn-1.50.6, 2017-06-03: bug fix, parameter ci in plot.ordEval
+CORElearn-1.50.4, 2017-05-09: bug fix, empty model now predicts with default values
+CORElearn-1.50.3, 2017-03-28: fixing submission to CRAN
+CORElearn-1.50.2, 2017-03-27: changed the name of swap function
 CORElearn-1.50.1, 2017-03-24: bug fixes, registration of C routines in R
 CORElearn-1.50.0, 2017-03-17: bug fixes, improving C++ code, adding files cleanup, configure.win and cleanup.win
 CORElearn-1.49.0, 2016-11-23: adding reliabilityPlot, bug fixes for calibration 

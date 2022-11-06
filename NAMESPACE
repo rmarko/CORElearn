@@ -7,10 +7,10 @@ export(attrEval, allTests, infoCore, classDataGen, CoreModel, destroyModels, get
 		testCoreOrdEval, testCoreNA, testCoreRPORT, testCoreRand, testClassPseudoRandom,
 		testTime, versionCore, calibrate, applyCalibration, reliabilityPlot, preparePlot, rfProximity, rfAttrEvalClustering,
 		rfClustering, rfOutliers, classPrototypes, getRpartModel, discretize, applyDiscretization,
-		intervalMidPoint, noEqualRows
+		intervalMidPoint, noEqualRows, cvGen, cvGenStratified, cvCoreModel, gatherFromList
 )
 
-import(rpart)
+importFrom(rpart.plot,"rpart.plot")
 importFrom("cluster","pam","daisy")
 importFrom("grDevices", "bitmap", "bmp", "dev.cur", "dev.new", "gray",
      "jpeg", "pdf", "png", "postscript", "tiff")
@@ -19,6 +19,8 @@ importFrom("graphics", "arrows", "axis", "legend", "lines", "mtext",
 importFrom("utils", "read.table")
 importFrom("stats", "cmdscale","as.formula", "median", "model.frame", "na.pass","predict", 
            "qnorm", "reformulate", "rnorm", "runif", "sd","update.formula")    
+importFrom("nnet","which.is.max")
+importFrom("plotrix","draw.ellipse")
 
 S3method(plot, ordEval)
 S3method(predict, CoreModel)
