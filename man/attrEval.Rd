@@ -6,7 +6,7 @@
    specified by the formula with the selected heuristic method.  
    Feature evaluation algorithms available for classification problems 
    are various variants of Relief and ReliefF algorithms (ReliefF,
-   cost-sensitive ReliefF, \dots), gain ratio, gini-index, MDL, DKM, information gain, ...
+   cost-sensitive ReliefF, \dots), and impurity-based algorithms (information gain, gain ratio, gini-index, MDL, DKM, etc).
    For regression problems there are RREliefF, MSEofMean, MSEofModel, MAEofModel, ...
    Parallel execution on several cores is supported for speedup.
 }
@@ -15,15 +15,17 @@
            outputNumericSplits=FALSE, ...)
 }
 \arguments{
-  \item{formula}{ Either a formula specifying the attributes to be evaluated and the target variable, or a name of target variable, or an index of target variable. }
+  \item{formula}{ Either a formula specifying the attributes to be evaluated and the target variable, 
+                  or a name of target variable, or an index of target variable. }
   \item{data}{ Data frame with evaluation data. }
   \item{estimator}{ The name of the evaluation method.}
   \item{costMatrix}{ Optional cost matrix used with certain estimators. }
-  \item{outputNumericSplits}{ Controls of the output contain also the best split point for numeric attributes. 
-                 This is only sensible for impurity based estimators (like gini, MDL, gain ratio in classification 
-                 and MSEofMean in regression). Additionally, the default value of parameter 
-                 \code{binaryEvaluateNumericAttributes=TRUE} shall not be modified. If the value of 
-                 \code{outputNumericSplits} the output is a list instead of vector, see the returned value description.}
+  \item{outputNumericSplits}{ Controls of the output contain the best split point for numeric attributes. 
+                 This is only sensible for impurity based estimators (like information gain, gini, MDL, gain ratio, etc. in classification, 
+                 and MSEofMean in regression). The default value of parameter 
+                 \code{binaryEvaluateNumericAttributes = TRUE} shall not be modified in this case. If the value of 
+                 \code{outputNumericSplits = TRUE}, the output is a list with attribute evaluations and numeric attributes' splits 
+                 (instead of a single vector with evaaluations). See the returned value description.}
   \item{\dots }{ Additional options used by specific evaluation methods as described in \code{\link{helpCore}}.}
 }
 \details{

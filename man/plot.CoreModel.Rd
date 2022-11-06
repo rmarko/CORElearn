@@ -25,14 +25,13 @@
     For classification and regression trees (models "tree" and "regTree") the visualization produces a graph 
     representing structure
     of classification and regression tree, respectively. This process exploits graphical capabilities of 
-    \code{\link{rpart}} package. Internal structures of 
+    \code{\link{rpart.plot}} package. Internal structures of 
     \code{CoreModel} are converted to \code{\link{rpart.object}} and then visualized by calling
-    \code{\link{plot.rpart}} and \code{\link{text.rpart}} using some sensible values of graphical parameters. For more versatile
-    picture use \code{\link{getRpartModel}} and call these two functions with different parameters.  
-    An alternative is to use package rpart.plot and plot the \code{\link{rpart.object}} with it, however note that
-    \code{rpart.plot} can only display a single value in a leaf, which is not appropriate for model trees using e.g., 
+    \code{\link{rpart.plot}} using default parameters. Any additional parameters are passed on to this function. For further 
+    control use the \code{\link{getRpartModel}} function and call the function \code{\link{rpart.plot}} 
+    or \code{\link{plot.rpart}} with different parameters.  
+    Note that \code{rpart.plot} can only display a single value in a leaf, which is not appropriate for model trees using e.g., 
     linear regression in the leaves. For these cases function \code{\link{display}} is a better alternative.
-    directly modifying the parameters. 
     
     For random forest models (models "rf" and "rfNear") different types of visualizations can be produced depending on the
     \code{graphType} parameter:
@@ -61,22 +60,19 @@
 }
 \examples{
 # decision tree
-dataset <- CO2
-md <- CoreModel(Plant ~ ., dataset, model="tree")
-plot(md, dataset)
+dataset <- iris
+md <- CoreModel(Species ~ ., dataset, model="tree")
+plot(md, dataset) # additional parameters are passed directly to rpart.plot
 
-# more versatile graph can be obtained by explicit conversion to rpart.object 
-rpm <- getRpartModel(md,dataset)
-# and than setting additional graphical parameters in plot.rpart and text.rpart
+# Additional visualizations can be obtained by explicit conversion to rpart.object 
+#rpm <- getRpartModel(md,dataset)
+# and than setting graphical parameters in plot.rpart and text.rpart
+#require(rpart)
 # E.g., set angle to tan(0.5)=45 (degrees) and length of branches at least 5, 
 # try to make a dendrogram more compact
-plot(rpm, branch=0.5, minbranch=5, compress=TRUE)
+#plot(rpm, branch=0.5, minbranch=5, compress=TRUE)
 #(pretty=0) full names of attributes, numbers to 3 decimals, 
-text(rpm, pretty=0, digits=3)
-
-# an alternative is to use fancier rpart.plot package
-# rpart.plot(rpm) # rpart.plot has many parameters controlling the output
-# but it cannot plot models in leaves 
+#text(rpm, pretty=0, digits=3)
 
 destroyModels(md) # clean up
 

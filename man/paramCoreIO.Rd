@@ -50,6 +50,9 @@ paramCoreIO(modelRF, "parameters.par", io="write")
 # and reads them back into the model
 paramCoreIO(modelRF, "parameters.par", io="read")
 
+# clean up for the sake of R package checks
+file.remove("parameters.par")
+
 destroyModels(modelRF) # clean up
 
 }

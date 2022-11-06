@@ -1,5 +1,6 @@
 \name{CoreModel}
 \alias{CoreModel}
+\alias{cvCoreModel}
 \title{Build a classification or regression model }
 \description{
   Builds a classification or regression model from the \code{data} and \code{formula} with given parameters.
@@ -17,18 +18,28 @@ Regression models:
 \item locally weighted regression,
 \item kNN and weighted kNN with Gaussian kernel.
 }
+Function \code{cvCoreModel} applies cross-validation to estimate predictive performance of the model.
 }
 \usage{
   CoreModel(formula, data,
        model=c("rf","rfNear","tree","knn","knnKernel","bayes","regTree"),
-       ..., costMatrix=NULL)
+       costMatrix=NULL,...)
+  cvCoreModel(formula, data,
+       model=c("rf","rfNear","tree","knn","knnKernel","bayes","regTree"),
+       costMatrix=NULL, folds=10, stratified=TRUE, returnModel=TRUE, ...)
+
 }
 \arguments{
   \item{formula}{ Either a formula specifying the attributes to be evaluated and the target variable, or a name of target variable, or an index of target variable. }
   \item{data}{ Data frame with training data. }
   \item{model}{ The type of model to be learned. }
+  \item{costMatrix}{ Optional misclassification cost matrix used with certain models. }
+  \item{folds}{ An integer, specifying the number of folds to use in cross-validation of model. }
+  \item{stratified}{ A boolean specifying if cross-valiadation is to be stratified fpr classification problems, i.e. shall all folds have the same distribution of class values. }
+  \item{returnModel}{ If \code{TRUE} the function \code{cvCoreModel} estimates predictive performance using cross-validation and returns the model build on the whole data set. 
+        If \code{returnModel=FALSE} the function only evaluates the model using cross-validation.  }
   \item{... }{ Options for building the model. See \code{\link{helpCore}}. }
-  \item{costMatrix}{ Optional cost matrix used with certain models. }
+  
 }
 \details{
    The parameter \code{formula} can be interpreted in three ways, where the formula interface is the most elegant one, 
@@ -73,7 +84,7 @@ Regression models:
   By default uniform costs are assumed, i.e.,  costMatrix(i, i) = 0, and costMatrix(i, j) = 1, for i not equal to j.
 }
 \value{
-  The created model is not returned as a structure. It is stored internally
+  The created model is not returned as a R structure. It is stored internally
   in the package memory space and only its pointer (index) is returned.
   The maximum  number of models that can be stored simultaneously
   is a parameter of the initialization function \code{initCore} and
@@ -87,6 +98,12 @@ Regression models:
     \item{class.lev}{ class values for classification problem, null for regression problem, }
     \item{model}{ the type of model used, see parameter \code{model}, }
     \item{formula}{ the \code{formula} parameter passed. }
+  The function \code{cvCoreModel} evaluates the model using cross-validation and function \code{\link{modelEval}} to return
+   these additional components:
+  \item{avgs}{A vector with average values of each evaluation metric obtained from \code{\link{modelEval}}. }
+  \item{stds}{A vector with standard deviations of each evaluation metric from \code{\link{modelEval}}. }
+  \item{evalList}{A list, where each component is an evaluation metric from \code{\link{modelEval}}. Each component contains results of cross-validated runs.}
+   In case \code{returnModel=FALSE} the function only returns the above three components are keeps no model.
  }
 \references{
 Marko Robnik-Sikonja, Igor Kononenko: Theoretical and Empirical Analysis of ReliefF and RReliefF.
@@ -185,6 +202,12 @@ for (i in unique(ind)) {
 }
 table(pred,iris$Species)
 }
+# a simpler way to estimate performance using cross-validation
+model <- cvCoreModel(Species ~ ., iris, model="rf", rfNoTrees=20, 
+                    folds=10, stratified=TRUE, returnModel=TRUE,
+                    maxThreads=1)    
+model$avgs           
+
 }
 
 \keyword{ models }

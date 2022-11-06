@@ -1,5 +1,6 @@
 \name{ordEval}
 \alias{ordEval}
+\alias{OrdEval}
 \title{ Evaluation of ordered attributes }
 \description{
   The method evaluates the quality of ordered attributes

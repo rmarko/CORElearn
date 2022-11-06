@@ -7,12 +7,10 @@
 The package CORElearn is an R port of CORElearn data mining system.
 It provides various classification and regression models
 as well as algorithms for feature selection and evaluation.
-Several algorithms support parallel multithreaded execution via OpenMP, 
-but this feature is currently not supported on all platforms.
-It is tested to works on Windows, Linux, and Mac.
+Several algorithms support parallel multithreaded execution via OpenMP (see details in function descriptions)., 
 It is possible to run many functions outside the R environment.
 The description and source code is available on the package web site
-\url{http://lkm.fri.uni-lj.si/rmarko/software}.
+\url{http://lkm.fri.uni-lj.si/rmarko/software/}.
 }
 \details{
 The main functions are 
@@ -53,8 +51,13 @@ Some of the internal structures of the C++ part are described in \code{\link{COR
 For an automatically generated list of functions use \code{help(package=CORElearn)} or 
 \code{library(help=CORElearn)}.
 
+ut this feature is currently not supported on all platforms and may interfere with other means of parallelization used in R, like package paralell.
+It is tested to works on Windows, Linux, and Mac.
+
 For certain platforms multithreaded execution is not supported, since current set of compilers 
-at CRAN do not support OpenMP, but it is possible to recompile the package with appropriate tools and compilers
+at CRAN do not fully support OpenMP. Also note that OpenMP execution may interfere with other means of parallelization on certain platforms. E.g.,
+interference with package parallel is reported on Windows which can be prevented by setting parameter maxThreads=1.
+For platforms other than Linux, Windows, and OsX to support multithreading it is possible to recompile the package with appropriate tools and compilers
 (modify Makefile or Makefile.win in src folder, or consult authors).   
 }
 \author{

@@ -78,5 +78,11 @@ cat("Are predicted classes of original and retrieved models equal? ",
 destroyModels(modelRF) 
 destroyModels(loadedRF) 
 
+# clean up for the sake of R package checks
+file.remove("tempRF.txt")
+file.remove("tempRF.txt.Rda")
+
+
+
 }
 

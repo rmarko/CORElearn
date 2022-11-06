@@ -53,8 +53,11 @@ A plot device is opened and nothing is returned to the R interpreter.
     dat <- ordDataGen(200)
     # evaluate ordered features with ordEval
     oe <- ordEval(class ~ ., dat, ordEvalNoRandomNormalizers=200)
-    # creates a separate postscript file for each attribute with given name     
-    preparePlot("myGraph\%03d.ps") 
+    
+    # the folowing line if uncommented will create a separate 
+    # postscript file with given filename for each attribute   
+    # preparePlot("myGraph\%03d.ps") 
+    
     plot(oe)
     dev.off()
 }
